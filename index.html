@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annemi Li — Ripple</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;600&display=swap');
+
+  :root {
+    --black: #080808;
+    --white: #f0f0f0;
+    --gray: #999;
+    --dark-gray: #383838;
+    --mid-gray: #5a5a5a;
+    --ink: #bbb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--white); color: var(--black); }
+
+  /* ─── Ripple Canvas ─── */
+  #rippleCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* ─── Nav ─── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 1.1rem 2.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--dark-gray);
+  }
+
+  nav .logo {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.82rem; font-weight: 300;
+    color: var(--white); text-decoration: none;
+    letter-spacing: 0.08em;
+    font-style: italic;
+  }
+
+  nav .logo .en {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-left: 0.6rem;
+    font-weight: 400;
+  }
+
+  nav ul { list-style: none; display: flex; gap: 2.2rem; }
+
+  nav ul li a {
+    text-decoration: none; color: var(--gray);
+    font-size: 0.7rem; letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    transition: color 0.3s;
+    position: relative;
+  }
+
+  nav ul li a::after {
+    content: ''; position: absolute;
+    bottom: -4px; left: 50%; width: 0; height: 1px;
+    background: var(--white);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+
+  nav ul li a:hover { color: var(--white); }
+  nav ul li a:hover::after { width: 100%; }
+
+  /* ─── Sections ─── */
+  section {
+    position: relative; z-index: 1;
+    padding: 8rem 3rem;
+    max-width: 920px; margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.75rem; color: var(--mid-gray);
+    letter-spacing: 0.3em; margin-bottom: 0.4rem;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.8rem; font-weight: 300;
+    letter-spacing: 0.08em; margin-bottom: 3rem;
+    position: relative; display: inline-block;
+  }
+
+  .section-title .en {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem; color: var(--mid-gray);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    display: block; margin-top: 0.4rem;
+  }
+
+  /* Ink line under title */
+  .section-title::after {
+    content: ''; display: block;
+    width: 40px; height: 2px; margin-top: 12px;
+    background: var(--white);
+    opacity: 0.3;
+  }
+
+  /* ─── Ink divider ─── */
+  .ink-divider {
+    max-width: 920px; margin: 0 auto;
+    text-align: center; padding: 1rem 0;
+    position: relative; z-index: 1;
+  }
+
+  .ink-divider svg {
+    width: 120px; height: 20px; opacity: 0.15;
+  }
+
+  /* ─── Hero ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding-top: 4rem;
+    position: relative;
+  }
+
+  .hero-inner { max-width: 680px; position: relative; z-index: 2; }
+
+  .hero-quote {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; color: var(--mid-gray);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease both 0.2s; opacity: 0;
+  }
+
+  .hero-name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 2.6rem; font-weight: 200;
+    letter-spacing: 0.08em; line-height: 1.3;
+    margin-bottom: 0.8rem;
+    white-space: nowrap;
+    animation: fadeIn 0.8s ease both 0.5s; opacity: 0;
+  }
+
+  .hero-name-en {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem; font-weight: 400;
+    letter-spacing: 0.3em; color: var(--gray);
+    margin-bottom: 2rem;
+    animation: fadeIn 0.8s ease both 0.7s; opacity: 0;
+  }
+
+  .hero-tagline {
+    font-size: 0.85rem; color: var(--gray);
+    max-width: 480px; margin: 0 auto 2.5rem;
+    line-height: 2;
+    animation: fadeIn 0.8s ease both 0.9s; opacity: 0;
+  }
+
+  .hero-ripple-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--mid-gray);
+    letter-spacing: 0.25em; text-transform: uppercase;
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease both 1.1s; opacity: 0;
+    font-style: italic;
+  }
+
+  .hero-links {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeIn 0.8s ease both 1.3s; opacity: 0;
+  }
+
+  .hero-links a {
+    display: inline-block; padding: 0.55rem 1.5rem;
+    border: 1px solid var(--dark-gray); text-decoration: none;
+    color: var(--gray); font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-links a::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: var(--white);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease;
+    z-index: -1;
+  }
+
+  .hero-links a:hover {
+    border-color: var(--white);
+    color: var(--black);
+  }
+
+  .hero-links a:hover::before {
+    width: 300px; height: 300px;
+  }
+
+  /* ─── About ─── */
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  .about-text p {
+    font-size: 0.85rem; color: var(--ink);
+    margin-bottom: 1.3rem; line-height: 2;
+  }
+
+  .about-info { border-left: 1px solid var(--dark-gray); padding-left: 2rem; }
+
+  .info-row {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; justify-content: space-between;
+    font-size: 0.78rem;
+  }
+
+  .info-row .label {
+    font-family: 'Noto Serif SC', serif;
+    color: var(--mid-gray); font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .info-row .value {
+    color: var(--white); text-align: right;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+  }
+
+  /* ─── Research ─── */
+  .research-item {
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid; grid-template-columns: 100px 1fr;
+    gap: 2.5rem; transition: all 0.3s; position: relative;
+  }
+
+  .research-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+
+  .research-item::before {
+    content: '';
+    position: absolute; left: -20px; top: 2rem;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: transparent; border: 1px solid var(--mid-gray);
+    transition: all 0.3s;
+  }
+
+  .research-item:hover::before {
+    background: var(--white); border-color: var(--white);
+    box-shadow: 0 0 8px rgba(255,255,255,0.3);
+  }
+
+  .research-item:hover { padding-left: 0.5rem; }
+
+  .research-item .r-tag {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.7rem; color: var(--mid-gray);
+    letter-spacing: 0.1em; padding-top: 0.15rem;
+  }
+
+  .research-item h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem;
+  }
+
+  .research-item p {
+    font-size: 0.78rem; color: var(--gray); line-height: 1.8;
+  }
+
+  .research-item .meta {
+    margin-top: 0.5rem; font-size: 0.65rem;
+    color: var(--mid-gray); font-style: italic;
+  }
+
+  .status {
+    display: inline-block; margin-top: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--mid-gray);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gray);
+  }
+
+  .status.ready { border-color: var(--white); color: var(--white); }
+  .status.prep { border-color: var(--mid-gray); color: var(--gray); }
+  .status.contrib { border-color: var(--dark-gray); color: var(--mid-gray); }
+  .status.demo { border-color: var(--mid-gray); color: var(--gray); font-style: italic; }
+
+  /* ─── Education ─── */
+  .edu-list { display: flex; flex-direction: column; gap: 2rem; }
+
+  .edu-item {
+    padding: 1.8rem 2rem;
+    border: 1px solid var(--dark-gray);
+    transition: all 0.3s; position: relative;
+    overflow: hidden;
+  }
+
+  .edu-item::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; width: 0; height: 1px;
+    background: var(--white); transition: width 0.5s ease;
+  }
+
+  .edu-item:hover::after { width: 100%; }
+  .edu-item:hover { border-color: var(--mid-gray); }
+
+  .edu-item .year {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; color: var(--mid-gray);
+    letter-spacing: 0.2em; margin-bottom: 0.3rem;
+  }
+
+  .edu-item h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.1rem; font-weight: 300;
+    letter-spacing: 0.05em; margin-bottom: 0.2rem;
+  }
+
+  .edu-item p { font-size: 0.78rem; color: var(--gray); }
+
+  /* ─── Gallery (Series) ─── */
+  .gallery-desc {
+    font-size: 0.8rem; color: var(--mid-gray);
+    margin-bottom: 2.5rem; margin-top: -2rem;
+    font-style: italic;
+  }
+
+  .gallery-series { margin-bottom: 3rem; }
+
+  .series-header { margin-bottom: 1rem; }
+
+  .series-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem; font-weight: 300;
+    letter-spacing: 0.08em; margin-bottom: 0.2rem;
+  }
+
+  .series-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem; color: var(--mid-gray);
+    letter-spacing: 0.08em;
+  }
+
+  .series-scroll {
+    display: flex; gap: 3px;
+    overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: none; -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+  }
+  .series-scroll::-webkit-scrollbar { display: none; }
+
+  .series-item {
+    flex: 0 0 auto; width: 280px; height: 280px;
+    position: relative; overflow: hidden;
+    scroll-snap-align: start; cursor: grab;
+    background: var(--dark-gray);
+  }
+  .series-item:active { cursor: grabbing; }
+
+  .series-item img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: grayscale(100%) contrast(1.1);
+    transition: filter 0.5s ease, transform 0.5s ease;
+  }
+  .series-item:hover img {
+    filter: grayscale(0%) contrast(1);
+    transform: scale(1.03);
+  }
+
+  .series-item .s-overlay {
+    position: absolute; inset: 0;
+    background: rgba(8,8,8,0.82);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.4s;
+    padding: 1rem; text-align: center;
+  }
+  .series-item:hover .s-overlay { opacity: 1; }
+
+  .s-overlay h4 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.85rem; font-weight: 300;
+    letter-spacing: 0.08em; margin-bottom: 0.2rem;
+  }
+  .s-overlay p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem; color: var(--gray);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  .series-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem; color: var(--dark-gray);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-top: 0.5rem; text-align: right;
+  }
+
+  /* ─── Interests ─── */
+  .interests-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+  }
+
+  .int-block h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem; font-weight: 300;
+    letter-spacing: 0.1em; margin-bottom: 1.2rem;
+  }
+
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .t {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--dark-gray);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; color: var(--gray);
+    transition: all 0.3s; cursor: default;
+    position: relative; overflow: hidden;
+  }
+
+  .t::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: var(--white);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+    z-index: -1;
+  }
+
+  .t:hover {
+    border-color: var(--white); color: var(--black);
+  }
+
+  .t:hover::before { width: 200px; height: 200px; }
+
+  .int-block p {
+    font-size: 0.82rem; color: var(--gray); line-height: 1.9;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 5rem 3rem;
+    border-top: 1px solid var(--dark-gray);
+  }
+
+  .footer-ripple {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.5rem; font-weight: 200;
+    color: var(--dark-gray); letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-quote {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem; color: var(--mid-gray);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+
+  footer .copy {
+    font-size: 0.68rem; color: var(--mid-gray);
+    letter-spacing: 0.1em; margin-bottom: 1.5rem;
+  }
+
+  footer .f-links {
+    display: flex; justify-content: center; gap: 2.5rem;
+  }
+
+  footer .f-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--dark-gray); text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  footer .f-links a:hover { color: var(--white); }
+
+  /* ─── Photography ─── */
+  .photo-scroll-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .photo-scroll {
+    display: flex;
+    gap: 3px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 1rem;
+  }
+
+  .photo-scroll::-webkit-scrollbar { display: none; }
+
+  .photo-frame {
+    flex: 0 0 auto;
+    width: 400px;
+    height: 260px;
+    position: relative;
+    overflow: hidden;
+    scroll-snap-align: start;
+    cursor: grab;
+  }
+
+  .photo-frame:active { cursor: grabbing; }
+
+  .photo-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .photo-frame:hover img {
+    transform: scale(1.03);
+  }
+
+  .photo-frame .photo-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 1.5rem 1rem 0.8rem;
+    background: linear-gradient(transparent, rgba(8,8,8,0.8));
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gray);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .photo-frame:hover .photo-caption { opacity: 1; }
+
+  .photo-scroll-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--mid-gray);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    text-align: right;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0; transform: translateY(18px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    nav { padding: 0.8rem 1.5rem; }
+    nav ul { gap: 1.2rem; }
+    nav ul li a { font-size: 0.62rem; }
+    section { padding: 5rem 1.5rem; }
+    .hero-name { font-size: 1.8rem; white-space: normal; }
+    .hero-name-en { font-size: 0.8rem; }
+    .about-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .about-info { border-left: none; padding-left: 0; border-top: 1px solid var(--dark-gray); padding-top: 1.5rem; }
+    .research-item { grid-template-columns: 1fr; gap: 0.3rem; }
+    .research-item::before { display: none; }
+    .series-item { width: 220px; height: 220px; }
+    .photo-frame { width: 300px; height: 200px; }
+    .interests-layout { grid-template-columns: 1fr; gap: 2rem; }
+  }
+
+  @media (max-width: 480px) {
+    nav ul { display: none; }
+    .hero-name { font-size: 1.3rem; letter-spacing: 0.05em; white-space: normal; }
+    .gallery-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ripple background canvas -->
+<canvas id="rippleCanvas"></canvas>
+
+<nav>
+  <a href="#hero" class="logo">And ne forhtedon ná</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#interests">Misc</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Hero ─── -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-quote">Ripple is a transient hippocampal oscillation</p>
+
+    <h1 class="hero-name">All Experimental with Annemi</h1>
+    <p class="hero-name-en">ANNEMI LI</p>
+
+    <p class="hero-tagline">
+      Art · Brain · Consciousness · Engineering · Mathematics · Optics · Philosophy
+    </p>
+
+    <p class="hero-ripple-text">
+      — every signal begins as a ripple —
+    </p>
+
+    <div class="hero-links">
+      <a href="mailto:your@email.com">Email</a>
+      <a href="#">GitHub</a>
+      <a href="#">Scholar</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<!-- Ink divider -->
+<div class="ink-divider">
+  <svg viewBox="0 0 120 20" fill="none">
+    <path d="M0 10 Q30 0 60 10 Q90 20 120 10" stroke="#e8e8e8" stroke-width="0.5" fill="none"/>
+    <circle cx="60" cy="10" r="2" fill="#e8e8e8" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── About ─── -->
+<section id="about">
+  <div class="fade-in">
+    <p class="section-label">壹</p>
+    <h2 class="section-title">关于 <span class="en">About</span></h2>
+  </div>
+
+  <div class="about-layout fade-in">
+    <div class="about-text">
+      <p>
+        Born in Xi'an, Shaanxi. Started in philosophy, then pivoted to engineering.
+        Now finishing a B.S. in Biomedical Engineering at Miami University,
+        working across tissue optics, behavioral neuroscience, and embedded
+        biosignal processing systems.
+      </p>
+      <p>
+        Decades of living with psychiatric illness led me toward a single question:
+        how do we physically intervene in mental suffering? Next step is graduate
+        work in psychiatric brain-computer interfaces at Mount Sinai, pursuing
+        multimodal physical therapies for psychiatric conditions.
+      </p>
+      <p>
+        Outside the lab, I make things. Drawing, painting, calligraphy, photography,
+        writing. I watch too many films and listen to too much music. I play video
+        games late at night.
+      </p>
+    </div>
+
+    <div class="about-info">
+      <div class="info-row"><span class="label">所在</span><span class="value">Xi'an → Ohio → NYC</span></div>
+      <div class="info-row"><span class="label">方向</span><span class="value">Psychiatric BCI · Optics</span></div>
+      <div class="info-row"><span class="label">创作</span><span class="value">Drawing · Photo · Writing</span></div>
+      <div class="info-row"><span class="label">故乡</span><span class="value">陕西 · 西安</span></div>
+      <div class="info-row"><span class="label">游戏</span><span class="value">Late-night gamer</span></div>
+      <div class="info-row"><span class="label">氛围</span><span class="value">Punk · Indie · Psych</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="ink-divider">
+  <svg viewBox="0 0 120 20" fill="none">
+    <path d="M0 10 Q30 0 60 10 Q90 20 120 10" stroke="#e8e8e8" stroke-width="0.5"/>
+    <circle cx="60" cy="10" r="2" fill="#e8e8e8" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── Research ─── -->
+<section id="research">
+  <div class="fade-in">
+    <p class="section-label">贰</p>
+    <h2 class="section-title">研究 <span class="en">Research</span></h2>
+  </div>
+
+  <div class="fade-in">
+    <div class="research-item">
+      <div class="r-tag">理论</div>
+      <div>
+        <h3>Panic & Dissociative State Transitions</h3>
+        <p>Theoretical framework on state transitions between panic and dissociative states via dynamical systems theory.</p>
+        <span class="status ready">Manuscript Ready</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">光学</div>
+      <div>
+        <h3>Double Integrating Sphere & IAD</h3>
+        <p>Optical characterization of tissue phantoms using DIS system and inverse adding-doubling software. Transport MFP and diffusion approximation criteria.</p>
+        <span class="status prep">In Preparation</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">行为</div>
+      <div>
+        <h3>Automated Behavior Quantification Pipeline</h3>
+        <p>Built an end-to-end pipeline for behavioral neuroscience: pose estimation via DeepLabCut (~3–4px error @ 50k iterations, single-mouse top-view) feeding into SimBA for automated behavioral classification and quantification.</p>
+        <div class="meta">DeepLabCut · SimBA · Python · RTX 3060</div>
+        <span class="status prep">In Preparation</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">传感</div>
+      <div>
+        <h3>Colorimetric Glucose Biosensor</h3>
+        <p>Led electrical and embedded system design for an ESP32-based colorimetric glucose biosensor with BPW34 photodiode, optical sensing front-end, and differential ambient-light-corrected calibration.</p>
+        <span class="status demo">Demo Coming Soon</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">环境</div>
+      <div>
+        <h3>Mn Removal from Potable Water</h3>
+        <p>Investigated adsorption kinetics using activated biomass for low-cost water treatment. Conducted pyrolysis, BET surface-area analysis, TGA, colorimetry, and pH optimization. Team achieved >90% manganese removal efficiency.</p>
+        <span class="status contrib">Lab Contribution</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">力学</div>
+      <div>
+        <h3>Materials Testing: Silicone & Porcine Tissue</h3>
+        <p>Characterized nonlinear hyperelastic and viscoelastic behavior of silicone rubber and porcine skeletal muscle under uniaxial tension and compression. Fitted four-term Ogden model (R² = 0.997).</p>
+        <div class="meta">Ogden Hyperelastic Modeling · Stress Relaxation</div>
+        <span class="status ready">Course Project</span>
+      </div>
+    </div>
+    <div class="research-item">
+      <div class="r-tag">力学</div>
+      <div>
+        <h3>Mooney–Rivlin Hyperelastic Model</h3>
+        <p>Derived PK1 stress predictions under uniaxial tension and simple shear for incompressible Mooney–Rivlin materials. Demonstrated nonlinear strain-stiffening in tension and linear shear response.</p>
+        <div class="meta">Continuum Mechanics · Constitutive Modeling</div>
+        <span class="status ready">Course Project</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ink-divider">
+  <svg viewBox="0 0 120 20" fill="none">
+    <path d="M0 10 Q30 0 60 10 Q90 20 120 10" stroke="#e8e8e8" stroke-width="0.5"/>
+    <circle cx="60" cy="10" r="2" fill="#e8e8e8" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── Education ─── -->
+<section id="education">
+  <div class="fade-in">
+    <p class="section-label">叁</p>
+    <h2 class="section-title">教育 <span class="en">Education</span></h2>
+  </div>
+
+  <div class="edu-list fade-in">
+    <div class="edu-item">
+      <div class="year">2022 — 2026</div>
+      <h3>Miami University</h3>
+      <p>B.S. Biomedical Engineering · Minor in Computer Science · Oxford, Ohio</p>
+    </div>
+    <div class="edu-item">
+      <div class="year">2026 —</div>
+      <h3>Icahn School of Medicine at Mount Sinai</h3>
+      <p>Graduate Studies · Psychiatric BCI · New York City</p>
+    </div>
+  </div>
+</section>
+
+<div class="ink-divider">
+  <svg viewBox="0 0 120 20" fill="none">
+    <path d="M0 10 Q30 0 60 10 Q90 20 120 10" stroke="#e8e8e8" stroke-width="0.5"/>
+    <circle cx="60" cy="10" r="2" fill="#e8e8e8" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── Gallery ─── -->
+<section id="gallery">
+  <div class="fade-in">
+    <p class="section-label">肆</p>
+    <h2 class="section-title">作品 <span class="en">Gallery</span></h2>
+    <p class="gallery-desc">drawing · photography · calligraphy · things I make</p>
+  </div>
+
+  <div class="gallery-grid fade-in">
+    <!-- Red Series -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">赤 · Red Series</h3>
+        <p class="series-desc">White line on red — portraits, bodies, and objects dissolving into warmth</p>
+      </div>
+      <div class="series-scroll">
+        <div class="series-item"><img src="gallery/portrait-hat.png" alt="Portrait" loading="lazy"><div class="s-overlay"><h4>Portrait</h4><p>Digital Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/astronaut.jpeg" alt="Astronaut" loading="lazy"><div class="s-overlay"><h4>Astronaut</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/contour-figure.jpeg" alt="Contour figure" loading="lazy"><div class="s-overlay"><h4>Contour</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/pizza.jpeg" alt="Pizza" loading="lazy"><div class="s-overlay"><h4>Pizza</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/leg.jpeg" alt="Anatomy" loading="lazy"><div class="s-overlay"><h4>Anatomy</h4><p>Line Drawing</p></div></div>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+
+    <!-- Gray Series -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">灰 · Gray Series</h3>
+        <p class="series-desc">Red line on gray — quiet observations, identity, and sound</p>
+      </div>
+      <div class="series-scroll">
+        <div class="series-item"><img src="gallery/singer.jpeg" alt="Singer" loading="lazy"><div class="s-overlay"><h4>Singer</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/face-roses.jpeg" alt="Portrait with roses" loading="lazy"><div class="s-overlay"><h4>Portrait II</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/identity.jpeg" alt="Identity" loading="lazy"><div class="s-overlay"><h4>Identity</h4><p>Line Drawing</p></div></div>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+
+    <!-- Teal Series -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">青 · Teal Series</h3>
+        <p class="series-desc">White line on teal — hands, flowers, and things that resonate</p>
+      </div>
+      <div class="series-scroll">
+        <div class="series-item"><img src="gallery/hands-touch.jpeg" alt="Hands touching" loading="lazy"><div class="s-overlay"><h4>Touch</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/hands-clasp.jpeg" alt="Hands clasping" loading="lazy"><div class="s-overlay"><h4>Clasp</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/roses.jpeg" alt="Roses" loading="lazy"><div class="s-overlay"><h4>Roses</h4><p>Line Drawing</p></div></div>
+        <div class="series-item"><img src="gallery/guitar.jpeg" alt="Guitar" loading="lazy"><div class="s-overlay"><h4>Guitar</h4><p>Line Drawing</p></div></div>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+
+    <!-- Lunar Eclipse -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">月 · Lunar Eclipse</h3>
+        <p class="series-desc">Full moon to blood moon — a sequence of shadow and light</p>
+      </div>
+      <div class="series-scroll">
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-1.jpeg" alt="Full moon" loading="lazy"><div class="s-overlay"><h4>I · Full Moon</h4><p>Photography</p></div></div>
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-2.jpeg" alt="Penumbral" loading="lazy"><div class="s-overlay"><h4>II · Penumbral</h4><p>Photography</p></div></div>
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-3.jpeg" alt="Partial" loading="lazy"><div class="s-overlay"><h4>III · Partial</h4><p>Photography</p></div></div>
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-4.jpeg" alt="Umbral" loading="lazy"><div class="s-overlay"><h4>IV · Umbral</h4><p>Photography</p></div></div>
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-5.jpeg" alt="Blood moon" loading="lazy"><div class="s-overlay"><h4>V · Blood Moon</h4><p>Photography</p></div></div>
+        <div class="series-item" style="width:420px;height:280px;"><img src="gallery/moon-6.jpeg" alt="Totality" loading="lazy"><div class="s-overlay"><h4>VI · Totality</h4><p>Photography</p></div></div>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+  </div>
+</section>
+
+<div class="ink-divider">
+  <svg viewBox="0 0 120 20" fill="none">
+    <path d="M0 10 Q30 0 60 10 Q90 20 120 10" stroke="#e8e8e8" stroke-width="0.5"/>
+    <circle cx="60" cy="10" r="2" fill="#e8e8e8" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ─── Interests ─── -->
+<section id="interests">
+  <div class="fade-in">
+    <p class="section-label">伍</p>
+    <h2 class="section-title">杂记 <span class="en">Misc</span></h2>
+  </div>
+
+  <div class="interests-layout fade-in">
+    <div class="int-block">
+      <h3>音乐</h3>
+      <div class="tag-cloud">
+        <span class="t">Pink Floyd</span>
+        <span class="t">Coldplay</span>
+        <span class="t">Placebo</span>
+        <span class="t">草东没有派对</span>
+        <span class="t">王菲</span>
+        <span class="t">陈粒</span>
+        <span class="t">水仙斗活佛</span>
+        <span class="t">Punk</span>
+        <span class="t">Indie</span>
+        <span class="t">Psych Rock</span>
+        <span class="t">Dream Pop</span>
+      </div>
+    </div>
+    <div class="int-block">
+      <h3>其他</h3>
+      <p>
+        Community organizer (2020–2022) — coordinated mental health programs,
+        meditation, peer support, and creative expression workshops across 10+
+        provinces in China. Late-night gamer. Film lover. Perpetual tinkerer.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ─── -->
+<footer>
+  <p class="copy">© 2026 Annemi Li</p>
+</footer>
+
+<script>
+  // ─── Scroll reveal ───
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+  // ─── Canvas: Gamma Wave + Pixel Ripple ───
+  const canvas = document.getElementById('rippleCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const pixelSize = 4;
+  let cols, rows;
+  let grid, nextGrid;
+
+  // Gamma oscillation parameters
+  const gammaFreq = 40; // Hz (gamma band)
+  const waveAmplitude = 18;
+  const waveSpeed = 0.003;
+  let waveTime = 0;
+
+  // Disturbance field from mouse ripples — now 2D vectors (dx, dy)
+  let disturbX, disturbY;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cols = Math.ceil(W / pixelSize);
+    rows = Math.ceil(H / pixelSize);
+    grid = Array.from({ length: cols }, () => new Float32Array(rows));
+    nextGrid = Array.from({ length: cols }, () => new Float32Array(rows));
+    disturbX = Array.from({ length: cols }, () => new Float32Array(rows));
+    disturbY = Array.from({ length: cols }, () => new Float32Array(rows));
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Irregular ripple drop — directional
+  function dropRipple(cx, cy, strength, vx, vy) {
+    const px = Math.floor(cx / pixelSize);
+    const py = Math.floor(cy / pixelSize);
+    const baseR = 2.5 + Math.random() * 1;
+    const angleOffsets = [];
+    for (let i = 0; i < 8; i++) {
+      angleOffsets.push(0.6 + Math.random() * 0.8);
+    }
+    for (let dx = -4; dx <= 4; dx++) {
+      for (let dy = -4; dy <= 4; dy++) {
+        const x = px + dx, y = py + dy;
+        if (x >= 0 && x < cols && y >= 0 && y < rows) {
+          const angle = Math.atan2(dy, dx);
+          const sector = Math.floor(((angle + Math.PI) / (2 * Math.PI)) * 8) % 8;
+          const r = baseR * angleOffsets[sector];
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist <= r) {
+            const falloff = 1 - dist / r;
+            grid[x][y] += strength * falloff * (0.7 + Math.random() * 0.3);
+            const dStr = strength * falloff * 0.6;
+            disturbY[x][y] += vy * dStr * 0.15;
+            disturbX[x][y] += vx * dStr * 0.08;
+          }
+        }
+      }
+    }
+  }
+
+  // Mouse — reduced frequency, tracks velocity
+  let mouseTimer = 0;
+  let lastMouseX = 0, lastMouseY = 0, mouseVX = 0, mouseVY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseVX = e.clientX - lastMouseX;
+    mouseVY = e.clientY - lastMouseY;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    mouseTimer++;
+    if (mouseTimer % 10 === 0) {
+      const cvx = Math.max(-8, Math.min(8, mouseVX));
+      const cvy = Math.max(-8, Math.min(8, mouseVY));
+      dropRipple(e.clientX, e.clientY, 80, cvx, cvy);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    for (let i = 0; i < 3; i++) {
+      const ox = (Math.random() - 0.5) * 20;
+      const oy = (Math.random() - 0.5) * 20;
+      const rv = (Math.random() - 0.5) * 10;
+      dropRipple(e.clientX + ox, e.clientY + oy, 180, rv, rv);
+    }
+  });
+
+  const damping = 0.968;
+
+  function simulate() {
+    for (let x = 1; x < cols - 1; x++) {
+      for (let y = 1; y < rows - 1; y++) {
+        nextGrid[x][y] = (
+          grid[x - 1][y] + grid[x + 1][y] +
+          grid[x][y - 1] + grid[x][y + 1]
+        ) / 2 - nextGrid[x][y];
+        nextGrid[x][y] *= damping;
+        // Disturbance decay — ~5 seconds to fully recover (0.98^300 ≈ 0.002)
+        disturbY[x][y] *= 0.98;
+        disturbX[x][y] *= 0.98;
+      }
+    }
+    [grid, nextGrid] = [nextGrid, grid];
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    waveTime += waveSpeed;
+
+    const numWaves = 5;
+    const waveSpacing = H / (numWaves + 1);
+
+    for (let w = 0; w < numWaves; w++) {
+      const baseY = waveSpacing * (w + 1);
+      const freq = gammaFreq * (0.8 + w * 0.1);
+      const amp = waveAmplitude * (0.6 + w * 0.15);
+
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.22 + w * 0.03})`;
+      ctx.lineWidth = 0.8;
+
+      for (let px = 0; px < cols; px++) {
+        const screenX = px * pixelSize;
+        const gridY = Math.floor(baseY / pixelSize);
+
+        // Sample disturbance in neighborhood — organic warping
+        let dY = 0, dX = 0;
+        if (gridY >= 0 && gridY < rows && px < cols) {
+          for (let sy = -2; sy <= 2; sy++) {
+            const gy = gridY + sy;
+            if (gy >= 0 && gy < rows) {
+              const w8 = 1 - Math.abs(sy) * 0.3;
+              dY += disturbY[px][gy] * w8;
+              dX += disturbX[px][gy] * w8;
+            }
+          }
+        }
+
+        const phase = waveTime * freq + px * 0.04 + w * 1.2;
+        const gammaVal = Math.sin(phase) * amp;
+        const harmonic = Math.sin(phase * 2.3) * amp * 0.3
+                       + Math.sin(phase * 0.7 + w) * amp * 0.4;
+
+        const finalY = baseY + gammaVal + harmonic + dY;
+        const finalX = screenX + dX;
+
+        if (px === 0) ctx.moveTo(finalX, finalY);
+        else ctx.lineTo(finalX, finalY);
+      }
+      ctx.stroke();
+    }
+
+    // Pixel ripples
+    for (let x = 0; x < cols; x++) {
+      for (let y = 0; y < rows; y++) {
+        const v = Math.abs(grid[x][y]);
+        if (v > 0.8) {
+          const alpha = Math.min(v / 50, 0.65);
+          const brightness = 220 + Math.min(v, 35);
+          ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${alpha})`;
+          ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize - 1, pixelSize - 1);
+        }
+      }
+    }
+  }
+
+  function loop() {
+    simulate();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+</script>
+
+</body>
+</html>
