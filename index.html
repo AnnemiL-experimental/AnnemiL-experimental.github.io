@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Annemi Li — Ripple</title>
+<title>Annemi Li</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;600&display=swap');
 
@@ -375,7 +375,7 @@
   .series-scroll::-webkit-scrollbar { display: none; }
 
   .series-item {
-    flex: 0 0 auto; width: 280px; height: 280px;
+    flex: 0 0 auto; width: 360px; height: 360px;
     position: relative; overflow: hidden;
     scroll-snap-align: start; cursor: grab;
     background: var(--dark-gray);
@@ -595,7 +595,7 @@
     .about-info { border-left: none; padding-left: 0; border-top: 1px solid var(--dark-gray); padding-top: 1.5rem; }
     .research-item { grid-template-columns: 1fr; gap: 0.3rem; }
     .research-item::before { display: none; }
-    .series-item { width: 220px; height: 220px; }
+    .series-item { width: 280px; height: 280px; }
     .photo-frame { width: 300px; height: 200px; }
     .interests-layout { grid-template-columns: 1fr; gap: 2rem; }
   }
@@ -640,10 +640,10 @@
     </p>
 
     <div class="hero-links">
-      <a href="mailto:officialannemi.l@gmail.com">Email</a>
-      <a href="https://github.com/AnnemiL-experimental">GitHub</a>
+      <a href="mailto:your@email.com">Email</a>
+      <a href="#">GitHub</a>
       <a href="#">Scholar</a>
-      <a href="https://www.linkedin.com/in/siyi-l-03a2a7380/">LinkedIn</a>
+      <a href="#">LinkedIn</a>
     </div>
   </div>
 </section>
@@ -899,6 +899,7 @@
       <h3>音乐</h3>
       <div class="tag-cloud">
         <span class="t">Pink Floyd</span>
+        <span class="t">Coldplay</span>
         <span class="t">Placebo</span>
         <span class="t">草东没有派对</span>
         <span class="t">王菲</span>
@@ -932,6 +933,15 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+  // ─── Horizontal wheel scroll for gallery series ───
+  document.addEventListener('wheel', (e) => {
+    const scrollContainer = e.target.closest('.series-scroll');
+    if (scrollContainer && Math.abs(e.deltaY) > 0) {
+      e.preventDefault();
+      scrollContainer.scrollBy({ left: e.deltaY * 2, behavior: 'auto' });
+    }
+  }, { passive: false });
 
   // ─── Canvas: Gamma Wave + Pixel Ripple ───
   const canvas = document.getElementById('rippleCanvas');
