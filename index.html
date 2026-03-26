@@ -642,7 +642,7 @@
     </p>
 
     <div class="hero-links">
-      <a href="mailto:your@email.com">Email</a>
+      <a href="/cdn-cgi/l/email-protection#6b12041e192b0e060a020745080406">Email</a>
       <a href="https://github.com/AnnemiL-experimental">GitHub</a>
       <a href="#">Scholar</a>
       <a href="https://www.linkedin.com/in/siyi-l-03a2a7380/">LinkedIn</a>
@@ -712,6 +712,15 @@
   </div>
 
   <div class="fade-in">
+    <div class="research-item">
+      <div class="r-tag">神经</div>
+      <div>
+        <h3>Before The Thought Arrives</h3>
+        <p>Interactive 3D brain visualization mapping EEG frequency bands and emotional states onto independent anatomical region volumes. Each state drives cfos-style fluorescent puncta, live waveform rendering, and procedurally generated stream-of-consciousness text. Built with Three.js + React.</p>
+        <div class="meta">Three.js · React · EEG · Brain States · Generative Text</div>
+        <a href="https://before-the-thought-arrives.vercel.app/" target="_blank" class="status ready" style="text-decoration:none;">Live ↗</a>
+      </div>
+    </div>
     <div class="research-item">
       <div class="r-tag">理论</div>
       <div>
@@ -939,7 +948,7 @@
   <p class="copy">© 2026 Annemi Li</p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ─── Scroll reveal ───
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -1114,19 +1123,4 @@
           const brightness = 220 + Math.min(v, 35);
           ctx.fillStyle = `rgba(${brightness}, ${brightness}, ${brightness}, ${alpha})`;
           ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize - 1, pixelSize - 1);
-        }
-      }
-    }
-  }
-
-  function loop() {
-    simulate();
-    draw();
-    requestAnimationFrame(loop);
-  }
-
-  loop();
-</script>
-
-</body>
-</html>
+       
