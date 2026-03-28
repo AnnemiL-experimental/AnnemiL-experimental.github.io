@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guestbook</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.8/index.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f5f3ef;
+      --surface: #ffffff;
+      --border:  #1a1a1a;
+      --shadow:  #aaaaaa;
+      --text:    #1a1a1a;
+      --muted:   #555555;
+      --hint:    #aaaaaa;
+      --soft:    #eeece8;
+      --danger:  #b02020;
+      --success: #2a6a3a;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Press Start 2P', monospace; min-height: 100vh; }
+
+    .gb { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+    .gb-stars { font-size: 9px; color: var(--hint); letter-spacing: 3px; text-align: center; margin: .2rem 0; }
+    .gb-title { font-size: 14px; letter-spacing: 4px; color: var(--text); text-align: center; margin: .6rem 0; }
+    .gb-sub   { font-size: 9px; color: var(--muted); text-align: center; margin: .3rem 0 1.75rem; }
+    .sec-lbl  { font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-bottom: 1rem; }
+
+    .px-card {
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      box-shadow: 5px 5px 0 var(--shadow);
+      padding: 1.4rem;
+      margin-bottom: 1.6rem;
+      position: relative;
+      overflow: visible;
+    }
+
+    label { display: block; font-size: 8px; color: var(--muted); letter-spacing: 1px; margin-bottom: 5px; }
+
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      background: var(--bg);
+      border: 2px solid var(--hint);
+      color: var(--text);
+      padding: 9px 10px;
+      outline: none;
+      line-height: 2;
+      transition: border-color .15s;
+    }
+    input:focus, textarea:focus { border-color: var(--border); }
+    input::placeholder, textarea::placeholder { color: var(--hint); }
+    textarea { resize: vertical; }
+
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px; padding: 10px 18px;
+      cursor: pointer; letter-spacing: 1px;
+      border: 2.5px solid var(--border);
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:hover  { opacity: .78; }
+    .btn:active { transform: translate(2px,2px); }
+    .btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+    .btn-fill { background: var(--border); color: var(--surface); box-shadow: 3px 3px 0 var(--shadow); }
+    .btn-out  { background: transparent; color: var(--muted); border-color: var(--hint); }
+    .btn-del  { background: transparent; color: var(--danger); border-color: var(--danger); font-size: 8px; padding: 5px 9px; }
+    .btn-sm   { font-size: 8px; padding: 7px 12px; }
+
+    .img-drop {
+      border: 2px dashed var(--hint); padding: 1rem;
+      text-align: center; cursor: pointer;
+      font-size: 8px; color: var(--muted); line-height: 2.4;
+      transition: border-color .2s, background .2s; margin-bottom: 10px;
+    }
+    .img-drop:hover, .img-drop.over { border-color: var(--border); background: var(--soft); }
+    .img-drop input { display: none; }
+    .img-pw { position: relative; display: inline-block; margin-bottom: 10px; }
+    .img-preview { max-width: 100%; max-height: 200px; border: 2.5px solid var(--border); display: block; object-fit: cover; }
+    .img-rm {
+      position: absolute; top: -8px; right: -8px;
+      width: 22px; height: 22px;
+      background: var(--danger); border: none; color: #fff;
+      font-family: 'Press Start 2P', monospace; font-size: 8px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    .em-grid { display: flex; flex-wrap: wrap; gap: 3px; padding: 8px; background: var(--soft); border: 2px solid var(--hint); margin-bottom: 12px; }
+    .em-item { background: transparent; border: none; font-size: 18px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .em-item:hover { background: var(--bg); }
+
+    .submit-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .char-cnt { font-size: 8px; color: var(--hint); }
+    .flash    { font-size: 9px; color: var(--success); }
+    .uprog    { font-size: 8px; color: var(--muted); }
+
+    /* ── Pixel Buddies ── */
+    #gb-buddies {
+      position: absolute; bottom: -20px; right: 14px;
+      display: flex; gap: 2px; align-items: flex-end;
+      pointer-events: none; z-index: 10;
+    }
+    .buddy { image-rendering: pixelated; display: block; }
+
+    @keyframes bob     { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-4px)} }
+    @keyframes shy-wag { 0%,100%{transform:translateY(0) rotate(0deg)} 30%{transform:translateY(-2px) rotate(-5deg)} 70%{transform:translateY(-2px) rotate(5deg)} }
+    @keyframes look-dn { 0%{transform:translateY(0) rotate(0deg)} 100%{transform:translateY(5px) rotate(-13deg)} }
+
+    .anim-peek     { animation: bob     2.5s ease-in-out infinite; }
+    .anim-shy      { animation: shy-wag 0.5s ease-in-out 2; }
+    .anim-lookdown { animation: look-dn 0.4s ease forwards; }
+
+    .msg-card { background: var(--surface); border: 2px solid var(--hint); box-shadow: 3px 3px 0 var(--shadow); padding: 1.1rem; margin-bottom: 1rem; }
+    .msg-meta  { display: flex; justify-content: space-between; align-items: center; margin-bottom: .7rem; gap: 8px; flex-wrap: wrap; }
+    .msg-name  { font-size: 10px; color: var(--text); }
+    .msg-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .msg-time  { font-size: 8px; color: var(--hint); }
+    .msg-body  { font-size: 9px; color: var(--muted); line-height: 2.2; word-break: break-word; margin-bottom: .6rem; }
+    .msg-img   { max-width: 100%; max-height: 280px; border: 2px solid var(--hint); display: block; margin-top: .5rem; cursor: pointer; object-fit: cover; transition: border-color .2s; }
+    .msg-img:hover { border-color: var(--border); }
+
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.88); z-index: 9999; align-items: center; justify-content: center; padding: 2rem; cursor: zoom-out; }
+    #lightbox.open { display: flex; }
+    #lightbox img  { max-width: 90vw; max-height: 90vh; object-fit: contain; border: 3px solid #fff; }
+    #lb-close { position: fixed; top: 1rem; right: 1rem; background: transparent; border: 2px solid #fff; color: #fff; font-family: 'Press Start 2P', monospace; font-size: 9px; padding: 8px 12px; cursor: pointer; }
+
+    #admin-modal { display: none; background: rgba(0,0,0,.55); align-items: center; justify-content: center; min-height: 260px; padding: 2rem; margin-bottom: 1.5rem; }
+    #admin-modal.open { display: flex; }
+    .modal-box { background: var(--surface); border: 2.5px solid var(--border); box-shadow: 5px 5px 0 var(--shadow); padding: 1.5rem; width: 100%; max-width: 340px; }
+    .modal-ttl  { font-size: 10px; letter-spacing: 1px; margin-bottom: 1rem; }
+    .modal-btns { display: flex; gap: 8px; margin-top: .75rem; }
+    .modal-err  { font-size: 8px; color: var(--danger); min-height: 14px; margin: .4rem 0; }
+
+    .divider  { font-size: 8px; color: var(--hint); text-align: center; letter-spacing: 3px; margin: 1rem 0; }
+    .empty    { font-size: 9px; color: var(--hint); text-align: center; padding: 2.5rem 1rem; line-height: 3; }
+    .loading  { font-size: 9px; color: var(--muted); text-align: center; padding: 1.5rem; }
+    .err-msg  { font-size: 9px; color: var(--danger); text-align: center; padding: 1rem; line-height: 2.5; }
+    .setup-box { background: var(--soft); border: 2px dashed var(--hint); padding: 1.5rem; font-size: 8px; color: var(--muted); line-height: 2.8; text-align: center; }
+  </style>
+</head>
+<body>
+<div class="gb">
+
+  <div id="admin-modal">
+    <div class="modal-box">
+      <div class="modal-ttl">[ ADMIN LOGIN ]</div>
+      <label>PASSWORD</label>
+      <input type="password" id="admin-pwd" placeholder="···" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="modal-err" id="admin-err"></div>
+      <div class="modal-btns">
+        <button class="btn btn-fill" onclick="doLogin()">OK</button>
+        <button class="btn btn-out"  onclick="closeModal()">CANCEL</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gb-stars">* * * * * * * * * * * * *</div>
+  <div class="gb-title">★ GUESTBOOK ★</div>
+  <div class="gb-sub">留下你的足迹</div>
+  <div class="gb-stars" style="margin-bottom:1.75rem">* * * * * * * * * * * * *</div>
+
+  <div class="px-card">
+    <div class="sec-lbl">[ 写下留言 ]</div>
+    <div style="margin-bottom:12px">
+      <label>NAME:</label>
+      <input type="text" id="inp-name" placeholder="your name..." maxlength="30">
+    </div>
+    <div style="margin-bottom:10px">
+      <label>MESSAGE:</label>
+      <textarea id="inp-msg" rows="4" placeholder="say something..." maxlength="500"></textarea>
+    </div>
+    <label>IMAGE (optional · max 5MB):</label>
+    <div class="img-drop" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" onchange="handleFileSelect(this)">
+      <span id="drop-lbl">▲ 点击选择图片，或拖拽到此处</span>
+    </div>
+    <div id="img-pw" class="img-pw" style="display:none">
+      <img id="img-preview" class="img-preview" alt="">
+      <button class="img-rm" onclick="clearImg()">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <button class="btn btn-out btn-sm" onclick="toggleEmoji()">EMOJI ▾</button>
+    </div>
+    <div id="emoji-wrap" style="display:none">
+      <div class="em-grid" id="em-grid"></div>
+    </div>
+    <div class="submit-row">
+      <button class="btn btn-fill" id="post-btn" onclick="postMsg()" disabled>▶ POST</button>
+      <span id="char-cnt" class="char-cnt">0 / 500</span>
+      <span id="uprog"      class="uprog" style="display:none">uploading...</span>
+      <span id="post-flash" class="flash" style="display:none">✓ SENT!</span>
+    </div>
+
+
+    <!-- Pixel Buddies (canvas-based pixel art) -->
+    <div id="gb-buddies">
+      <canvas id="buddy-rabbit" class="buddy anim-peek" width="36" height="60" style="width:36px;height:60px;image-rendering:pixelated"></canvas>
+    </div>
+  </div><!-- /px-card -->
+
+  <div id="msg-area"><div class="loading">loading...</div></div>
+
+  <div style="text-align:center;padding-top:1.5rem">
+    <button class="btn btn-out btn-sm" id="adm-btn" onclick="handleAdmin()">[ admin ]</button>
+  </div>
+
+</div>
+
+<div id="lightbox" onclick="closeLb()">
+  <button id="lb-close" onclick="closeLb()">✕ CLOSE</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIGURATION — 填写你的 Supabase 凭据
+// ══════════════════════════════════════════════
+const SUPABASE_URL = "https://omqcsplnjobjixadugom.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tcWNzcGxuam9iaml4YWR1Z29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzkwNDQsImV4cCI6MjA5MDI1NTA0NH0.KUvuKdrO0f-8V-ECcldc4gts515zlDrEv0bCJhAbo_I";
+const BUCKET       = "guestbook";
+const ADMIN_PWD    = "Annemi20131104%";  
+const MAX_MB       = 100;
+// ══════════════════════════════════════════════
+
+const EMOJIS = ["✨","💜","🌙","🐱","👾","🎮","🧬","🌊","🖤","💫","🔮","🌸","⚡","🎵","🌿","👁️","🫀","🦋","🌀","🪐","🧠","🔬","🎲","🌺","🦊","🍵","🎐","🪷","🌻","🐉"];
+let db, adminMode = false, selFile = null, posting = false, typTimer = null;
+
+// ── Pixel art engine ─────────────────────────
+const PX = 3; // canvas pixels per "game pixel"
+
+// 12×20 pixel maps. Each string = 1 row (12 chars).
+// Rows 0-11 visible above ledge; row 12 = paws at ledge; rows 13-19 = body below.
+const RC = { // rabbit palette
+  '.':null,'O':'#3d1520','W':'#ffffff','p':'#f5d0e0',
+  'P':'#f0b0c8','e':'#111111','N':'#e898b0','A':'#f2e8ec','a':'#ddc0cc',
+};
+const SC = { // sheep palette
+  '.':null,'O':'#3d1520','w':'#e8e8e8','f':'#fde8c8',
+  'E':'#111111','N':'#c49070','H':'#c0c0c0','h':'#a0a0a0',
+};
+
+const body_r = [  // rabbit body rows (13-19, shared)
+  'AOWWWWWWWWOA','AOWWWWWWWWOA',
+  '.OWWWWWWWWO.','.OWWWWWWWWO.',
+  '..OWWWWWWO..','...OWWWWO...','............',
+];
+const body_s = [  // sheep body rows (13-19, shared)
+  'Hwwwwwwwwwwh','Hwwwwwwwwwwh',
+  '.Hwwwwwwwwh.','.Hwwwwwwwwh.',
+  '..Hwwwwwwh..','..Hwwwwwwh..','............',
+];
+
+const FRAMES = {
+  rabbit: {
+    peek: [
+      '..OO....OO..',  // r0  ear tips
+      '.OppO..OppO.',  // r1  ears
+      '.OppO..OppO.',  // r2
+      '.OppO..OppO.',  // r3
+      '.OWWO..OWWO.',  // r4  ear base (pink→white)
+      'OOWWWWWWWWOO',  // r5  head top (double outline at corners)
+      'OWWWWWWWWWWO',  // r6  head
+      'OWWPeWWePWWO',  // r7  eyes (c4,c7) + blush (c3,c8)
+      'OWWWWNNWWWWO',  // r8  nose (c5,c6)
+      '.OWWWWWWWWO.',  // r9  chin
+      '..OWWWWWWO..',  // r10
+      '...OWWWWO...',  // r11
+      'AAAA....AAAA',  // r12 paws at ledge
+      ...body_r,
+    ],
+    shy: [
+      '..OO....OO..','.OppO..OppO.','.OppO..OppO.',
+      '.OppO..OppO.','.OWWO..OWWO.',
+      'OOaaaaaaaaOO',  // r5  paws rise up
+      'OOaaaaaaaaOO',  // r6  paws cover eyes
+      'OOaaaaaaaaOO',  // r7  paws
+      'OWWWWNNWWWWO',  // r8  nose still visible
+      '.OWWWWWWWWO.','..OWWWWWWO..','...OWWWWO...',
+      'AAAA....AAAA',
+      ...body_r,
+    ],
+    lookdown: [
+      '..OO....OO..','.OppO..OppO.','.OppO..OppO.',
+      '.OppO..OppO.','.OWWO..OWWO.',
+      'OOWWWWWWWWOO','OWWWWWWWWWWO',
+      'OWWWWWWWWWWO',  // r7  no eyes (moved down)
+      'OWWPeWWePWWO',  // r8  eyes shifted down
+      'OWWWWNNWWWWO',  // r9  nose shifted down
+      '..OWWWWWWO..','...OWWWWO...',
+      'AAAA....AAAA',
+      ...body_r,
+    ],
+  },
+  sheep: {
+    peek: [
+      '..OOOOOOOO..',  // r0  wool top
+      '.OwwwwwwwwO.',  // r1  wool
+      'OwwwwwwwwwwO',  // r2  wool wider
+      'OwwwwfffffwO',  // r3  face starts (f at c5-c9)
+      'OwwwwfEfEfwO',  // r4  eyes (c6,c8 — center±1)
+      'OwwwwfffffwO',  // r5  face
+      'OwwwwffNffwO',  // r6  nose (N at c7)
+      'OwwwwfffffwO',  // r7  face
+      '.OwwwwwwwwO.',  // r8  wool chin
+      '..OwwwwwwO..',  // r9
+      '..OHHHHHHO..',  // r10 hooves
+      '..OHHHHHHO..',  // r11
+      'HHH......HHH',  // r12 hooves at ledge
+      ...body_s,
+    ],
+    shy: [
+      '..OOOOOOOO..','.OwwwwwwwwO.','OwwwwwwwwwwO',
+      'OwwwwfffffwO',
+      'OwwwwHHHHHwO',  // r4  hooves cover face
+      'OwwwwHHHHHwO',  // r5
+      'OwwwwHHHHHwO',  // r6
+      'OwwwwffNffwO',  // r7  nose visible
+      '.OwwwwwwwwO.','..OwwwwwwO..','..OHHHHHHO..','..OHHHHHHO..',
+      'HHH......HHH',
+      ...body_s,
+    ],
+    lookdown: [
+      '..OOOOOOOO..','.OwwwwwwwwO.','OwwwwwwwwwwO',
+      'OwwwwfffffwO','OwwwwfffffwO',  // r4 no eyes
+      'OwwwwfEfEfwO',  // r5  eyes shifted down
+      'OwwwwffNffwO',  // r6  nose shifted
+      'OwwwwfffffwO',  // r7
+      '.OwwwwwwwwO.','..OwwwwwwO..','..OHHHHHHO..','..OHHHHHHO..',
+      'HHH......HHH',
+      ...body_s,
+    ],
+  },
+};
+
+function drawBuddy(canvasId, type, state) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const palette = type === 'rabbit' ? RC : SC;
+  const rows = FRAMES[type][state];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  rows.forEach((row, y) => {
+    for (let x = 0; x < row.length; x++) {
+      const col = palette[row[x]];
+      if (!col) continue;
+      ctx.fillStyle = col;
+      ctx.fillRect(x * PX, y * PX, PX, PX);
+    }
+  });
+}
+
+function setBuddy(s) {
+  const el = document.getElementById('buddy-rabbit');
+  if (!el) return;
+  el.className = `buddy anim-${s}`;
+  drawBuddy('buddy-rabbit', 'rabbit', s);
+}
+function onType() {
+  setBuddy('shy');
+  clearTimeout(typTimer);
+  typTimer = setTimeout(() => setBuddy('peek'), 1600);
+}
+
+// ── Init ──────────────────────────────────────
+(function init() {
+  const grid = document.getElementById('em-grid');
+  EMOJIS.forEach(e => {
+    const b = document.createElement('button');
+    b.className = 'em-item'; b.textContent = e;
+    b.onclick = () => { const t = document.getElementById('inp-msg'); t.value += e; t.dispatchEvent(new Event('input')); };
+    grid.appendChild(b);
+  });
+
+  const zone = document.getElementById('drop-zone');
+  zone.addEventListener('dragover',  ev => { ev.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('over'));
+  zone.addEventListener('drop', ev => {
+    ev.preventDefault(); zone.classList.remove('over');
+    const f = ev.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) setFile(f);
+  });
+
+  document.getElementById('inp-name').addEventListener('input', () => { syncBtn(); onType(); });
+  document.getElementById('inp-msg').addEventListener('input',  () => { syncBtn(); onType(); });
+
+  setBuddy('peek');
+  // draw initial frames (canvas needs one render pass)
+  setTimeout(() => setBuddy('peek'), 50);
+
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) {
+    document.getElementById('msg-area').innerHTML =
+      '<div class="setup-box">⚙ SUPABASE 尚未配置<br><br>请在文件顶部填写<br>SUPABASE_URL 和 SUPABASE_KEY<br><br>详见 supabase-setup.sql</div>';
+    return;
+  }
+  db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  loadMessages();
+})();
+
+// ── File ──────────────────────────────────────
+function handleFileSelect(inp) { if (inp.files[0]) setFile(inp.files[0]); }
+function setFile(f) {
+  if (f.size > MAX_MB * 1024 * 1024) { alert(`图片不能超过 ${MAX_MB}MB`); return; }
+  selFile = f;
+  const r = new FileReader();
+  r.onload = ev => {
+    document.getElementById('img-preview').src = ev.target.result;
+    document.getElementById('img-pw').style.display = 'inline-block';
+    document.getElementById('drop-lbl').textContent = '▲ 点击更换图片';
+  };
+  r.readAsDataURL(f);
+}
+function clearImg() {
+  selFile = null;
+  document.getElementById('img-pw').style.display = 'none';
+  document.getElementById('file-input').value = '';
+  document.getElementById('drop-lbl').textContent = '▲ 点击选择图片，或拖拽到此处';
+}
+
+// ── Form ──────────────────────────────────────
+function syncBtn() {
+  const n = document.getElementById('inp-name').value.trim();
+  const m = document.getElementById('inp-msg').value.trim();
+  document.getElementById('post-btn').disabled = !(n && m) || posting;
+  document.getElementById('char-cnt').textContent = `${document.getElementById('inp-msg').value.length} / 500`;
+}
+function toggleEmoji() {
+  const w = document.getElementById('emoji-wrap');
+  w.style.display = w.style.display === 'none' ? 'block' : 'none';
+}
+
+// ── Post ──────────────────────────────────────
+async function postMsg() {
+  if (posting || !db) return;
+  const name = document.getElementById('inp-name').value.trim();
+  const text = document.getElementById('inp-msg').value.trim();
+  if (!name || !text) return;
+  posting = true;
+  document.getElementById('post-btn').disabled = true;
+  let image_url = null;
+
+  if (selFile) {
+    document.getElementById('uprog').style.display = 'inline';
+    const ext  = selFile.name.split('.').pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error: upErr } = await db.storage.from(BUCKET).upload(path, selFile, { cacheControl:'3600', upsert:false });
+    document.getElementById('uprog').style.display = 'none';
+    if (upErr) { alert('上传失败: ' + upErr.message); posting = false; syncBtn(); return; }
+    image_url = db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  }
+
+  const { error: insErr } = await db.from('messages').insert({ name, text, image_url });
+  if (insErr) { alert('发送失败: ' + insErr.message); posting = false; syncBtn(); return; }
+
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-msg').value  = '';
+  clearImg();
+  document.getElementById('emoji-wrap').style.display = 'none';
+  posting = false; syncBtn();
+
+  const fl = document.getElementById('post-flash');
+  fl.style.display = 'inline'; setTimeout(() => fl.style.display = 'none', 2500);
+
+  setBuddy('lookdown');
+  setTimeout(() => setBuddy('peek'), 2800);
+  loadMessages();
+}
+
+// ── Load ──────────────────────────────────────
+async function loadMessages() {
+  if (!db) return;
+  const area = document.getElementById('msg-area');
+  area.innerHTML = '<div class="loading">loading...</div>';
+  const { data, error } = await db.from('messages').select('*').order('created_at', { ascending: false });
+  if (error) {
+    area.innerHTML = `<div class="err-msg">✕ 无法加载留言<br><span style="font-size:8px;color:var(--hint)">${error.message}</span><br><br><span style="font-size:8px">请检查 Supabase 凭据与 RLS 设置</span></div>`;
+    return;
+  }
+  if (!data || !data.length) {
+    area.innerHTML = '<div class="divider">──── NO MESSAGES YET ────</div><div class="empty">◇ 还没有留言<br>成为第一个留下足迹的人 ↑</div>';
+    return;
+  }
+  area.innerHTML = `<div class="divider">──── ${data.length} ENTR${data.length===1?'Y':'IES'} ────</div>` + data.map(card).join('');
+}
+
+function card(m) {
+  const del = adminMode ? `<button class="btn btn-del" onclick="delMsg(${m.id},${JSON.stringify(m.image_url||'')})">✕</button>` : '';
+  const img = m.image_url ? `<img class="msg-img" src="${esc(m.image_url)}" loading="lazy" onclick="openLb('${esc(m.image_url)}')">` : '';
+  return `<div class="msg-card"><div class="msg-meta"><span class="msg-name">◆ ${esc(m.name)}</span><div class="msg-right"><span class="msg-time">${fmt(m.created_at)}</span>${del}</div></div><div class="msg-body">${esc(m.text)}</div>${img}</div>`;
+}
+
+// ── Delete ────────────────────────────────────
+async function delMsg(id, imageUrl) {
+  if (!adminMode || !confirm('删除这条留言？')) return;
+  if (imageUrl) {
+    const path = imageUrl.split(`/${BUCKET}/`)[1];
+    if (path) await db.storage.from(BUCKET).remove([path]);
+  }
+  await db.from('messages').delete().eq('id', id);
+  loadMessages();
+}
+
+// ── Admin ─────────────────────────────────────
+function handleAdmin() {
+  if (adminMode) { adminMode = false; document.getElementById('adm-btn').textContent = '[ admin ]'; loadMessages(); }
+  else { document.getElementById('admin-modal').classList.add('open'); setTimeout(() => document.getElementById('admin-pwd').focus(), 50); }
+}
+function closeModal() { document.getElementById('admin-modal').classList.remove('open'); document.getElementById('admin-pwd').value = ''; document.getElementById('admin-err').textContent = ''; }
+function doLogin() {
+  if (document.getElementById('admin-pwd').value === ADMIN_PWD) {
+    adminMode = true; closeModal();
+    document.getElementById('adm-btn').textContent = '[ exit admin ]';
+    loadMessages();
+  } else { document.getElementById('admin-err').textContent = '✕ wrong password'; }
+}
+
+// ── Lightbox ──────────────────────────────────
+function openLb(src) { document.getElementById('lb-img').src = src; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeLb()   { document.getElementById('lightbox').classList.remove('open'); document.getElementById('lb-img').src = ''; document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+// ── Helpers ───────────────────────────────────
+function pad(n)  { return String(n).padStart(2,'0'); }
+function fmt(iso){ const d = new Date(iso); return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function esc(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
