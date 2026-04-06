@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>赛博算命 | Cyber Fortune</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0612; overflow-x: hidden; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* Back nav */
+    .back-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 14px 24px;
+      background: rgba(10,6,18,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(179,136,255,0.08);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-nav a {
+      color: rgba(179,136,255,0.55); text-decoration: none;
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .back-nav a:hover { color: rgba(179,136,255,0.9); }
+    .back-nav .brand {
+      font-family: 'EB Garamond', serif; font-size: 13px;
+      color: rgba(200,180,220,0.35); letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="back-nav">
+    <a href="/">&#8592; BACK</a>
+    <span class="brand">annemi.studio</span>
+  </nav>
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel" data-type="module">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const SKILLS = [
+  { name: "内陆帝国", en: "Inland Empire",       color: "#b388ff", desc: "直觉与潜意识的低语" },
+  { name: "电化学",   en: "Electrochemistry",    color: "#ff6f61", desc: "多巴胺与血清素的狂欢" },
+  { name: "通灵术",   en: "Shivers",             color: "#4dd0e1", desc: "城市的脉搏与震颤" },
+  { name: "概念化",   en: "Conceptualization",    color: "#ffd54f", desc: "美学与意义的交汇" },
+  { name: "戏剧性",   en: "Drama",               color: "#ff8a65", desc: "谎言与真相的剧场" },
+  { name: "同理心",   en: "Empathy",             color: "#81c784", desc: "他人情感的回声" },
+  { name: "逻辑学",   en: "Logic",               color: "#90caf9", desc: "冰冷的理性链条" },
+  { name: "意志力",   en: "Volition",            color: "#ce93d8", desc: "最后的道德防线" },
+];
+
+const DIFFICULTIES = ["轻松", "普通", "挑战", "传奇", "不可能"];
+
+// ── Local fortune pool ──────────────────────────────────────────────
+// Each skill has success / failure templates.  {q} is replaced with
+// the user's question (or a fragment of it).
+const FORTUNES = {
+  "内陆帝国": {
+    success: [
+      "内陆帝国 [{diff}：成功]\n\n有什么东西在你颅骨深处发光。不是答案，比答案更古老。关于「{q}」，你的松果体已经知道了：是的，但不是以你期望的方式。它会像一场梦一样降临，而你会在醒来后忘记自己曾经怀疑过。相信那个光。",
+      "内陆帝国 [{diff}：成功]\n\n闭上眼睛。你看到了吗？在视网膜的噪点之间，关于「{q}」的答案正在自我组装。它说：前方有一条路，铺满了你还没有犯过的错误，但每一个错误都是必要的。走。",
+      "内陆帝国 [{diff}：成功]\n\n你的潜意识像一台老旧的收音机，突然调到了正确的频率。关于「{q}」，信号很清晰：宇宙正在为你重新排列家具。你只需要在正确的时间坐下。",
+    ],
+    failure: [
+      "内陆帝国 [{diff}：失败]\n\n你听到了什么？是的，是冰箱的嗡鸣声。不，等等，它在说话。它说「{q}」的答案藏在第三个抽屉里。你打开抽屉，里面只有一张过期的优惠券和一颗纽扣。也许这就是答案？你开始哭泣。",
+      "内陆帝国 [{diff}：失败]\n\n一个来自深层潜意识的声音对你说：关于「{q}」，你必须在满月时倒着走七步。你很确定这是胡说八道，但你已经开始数步数了。这就是问题所在。",
+    ],
+  },
+  "电化学": {
+    success: [
+      "电化学 [{diff}：成功]\n\n你的多巴胺受体正在唱歌，朋友。关于「{q}」，你身体里的每一个分子都在说同一件事：去做吧。那种刺痛感不是恐惧，是兴奋。你的血清素水平表明，好事正在合成的路上。",
+      "电化学 [{diff}：成功]\n\n你舌尖上有一种微妙的甜味。那是肾上腺素在预告好消息。关于「{q}」，你体内的化学工厂已经做出了裁决：绿灯。全速前进。副作用可能包括：不可遏制的微笑。",
+    ],
+    failure: [
+      "电化学 [{diff}：失败]\n\n你的血糖在暴跌。关于「{q}」，你的身体给出的答案是：先吃点东西再说。可能是拉面。可能是蛋糕。可能是拉面上面放蛋糕。你现在分不清饥饿和存在焦虑了。",
+      "电化学 [{diff}：失败]\n\n一阵眩晕。你的神经递质正在罢工。关于「{q}」，你唯一的想法是：如果你现在就躺在地板上，世界会不会变得更容易理解？答案是：可能不会，但地板很凉，很舒服。",
+    ],
+  },
+  "通灵术": {
+    success: [
+      "通灵术 [{diff}：成功]\n\n一阵寒意从脊椎升起。城市在对你说话。关于「{q}」，每一块砖、每一根电线都在传递同一个讯息：变化已经在路上了。你能感觉到它，像暴风雨前空气中的静电。准备好迎接它。",
+      "通灵术 [{diff}：成功]\n\n风改变了方向。你的皮肤上起了鸡皮疙瘩。关于「{q}」，这座城市的记忆告诉你：在这个确切的地点，很久以前，有人也问了同样的问题。他们得到了他们想要的。你也会。",
+    ],
+    failure: [
+      "通灵术 [{diff}：失败]\n\n你试图倾听城市的脉搏，但今天它只是在打呼噜。关于「{q}」，你从下水道盖的震动中读出的答案是「明天再来」。或者那只是一辆卡车开过。这两者之间的区别其实没有你想象的那么大。",
+      "通灵术 [{diff}：失败]\n\n一阵风吹过。你以为它携带着关于「{q}」的启示，但实际上它只带来了一张广告传单和一片落叶。你试图从传单的排版中解读天意。你失败了。",
+    ],
+  },
+  "概念化": {
+    success: [
+      "概念化 [{diff}：成功]\n\n啊，你看到了。关于「{q}」，答案不是一个词，而是一种颜色，一种只存在于黎明前最后五分钟的蓝。它意味着：一切都在趋向某种美。即使现在看不到，结构已经在那里了。你只需要退后一步。",
+      "概念化 [{diff}：成功]\n\n关于「{q}」，让我用一个比喻来回答：你正站在一幅画的内部。从这里看，一切都是混乱的色块。但如果你能看到整体，你会发现自己恰好站在最重要的位置上。继续站在那里。",
+    ],
+    failure: [
+      "概念化 [{diff}：失败]\n\n你试图将「{q}」概念化为一件装置艺术。它由三个生锈的齿轮和一根荧光灯管组成。标题是《无题 #47》。没有人理解它，包括你自己。你决定这是一种成功。批评家们会不同意的。",
+      "概念化 [{diff}：失败]\n\n关于「{q}」，你花了四十分钟构思了一个极其精巧的隐喻，涉及到十七世纪荷兰静物画和量子纠缠。然后你意识到你已经完全忘记了原来的问题是什么。也许隐喻本身就是答案？不，它不是。",
+    ],
+  },
+  "戏剧性": {
+    success: [
+      "戏剧性 [{diff}：成功]\n\n你看穿了这场戏。关于「{q}」，所有人都在演戏，而你刚刚拿到了剧本。结局是这样的：主角，也就是你，会在第三幕获得一个意想不到的转机。台词已经写好了。你只需要大声说出来。",
+      "戏剧性 [{diff}：成功]\n\n关于「{q}」，读一读房间里的空气。每个人的微表情都在泄露秘密。真相是：局势比你以为的要好得多。有人在暗中帮你，他们以为你没注意到。你注意到了。",
+    ],
+    failure: [
+      "戏剧性 [{diff}：失败]\n\n关于「{q}」，你用莎士比亚的口吻宣布了你的判断。然后你意识到你引用的那段台词其实是一个洗衣液广告。没有人指出这一点，因为他们被你的自信震慑住了。这算是一种成功。某种意义上。",
+      "戏剧性 [{diff}：失败]\n\n你深吸一口气，准备发表一段关于「{q}」的慷慨陈词。但你刚张嘴就打了个嗝。宇宙的戏剧性时机真的很差。你决定把这个嗝解读为一种回答。它意味着什么？你完全不知道。",
+    ],
+  },
+  "同理心": {
+    success: [
+      "同理心 [{diff}：成功]\n\n你感受到了。关于「{q}」，答案不在你的头脑里，而在你的胸口。那种温暖的、微微发酸的感觉，是宇宙在告诉你：你走在正确的道路上。周围的人比你以为的更善良。让他们帮助你。",
+      "同理心 [{diff}：成功]\n\n关于「{q}」，你闭上眼睛，感受到了所有相关之人的情绪光谱。那里有担忧，但更多的是期待。有人在想着你，带着一种你还不知道的善意。让事情自然发生。",
+    ],
+    failure: [
+      "同理心 [{diff}：失败]\n\n你试图感受关于「{q}」的情绪场。结果你感受到的是隔壁那只猫的孤独感。它已经等了三个小时让人打开那扇门了。你忘记了你的问题。你只想去摸摸那只猫。猫很重要。也许比你的问题更重要。",
+      "同理心 [{diff}：失败]\n\n关于「{q}」，你的同理心过载了。你同时感受到了七个陌生人的情绪，三种背景焦虑，和一株正在枯萎的植物的绝望。在这片情感的白噪声中，你的原始问题已经彻底迷路了。",
+    ],
+  },
+  "逻辑学": {
+    success: [
+      "逻辑学 [{diff}：成功]\n\n让我们用纯粹的理性来分析「{q}」。前提一：你在问这个问题。前提二：你已经知道答案，否则你不会问。结论：你需要的不是答案，而是确认。那么，确认一下：你的直觉是对的。概率支持你。",
+      "逻辑学 [{diff}：成功]\n\n关于「{q}」，经过贝叶斯推理：鉴于你当前的状态、已知的变量和历史先验概率，最可能的结果是积极的。置信区间在67%到83%之间。用人话说就是：值得一试。",
+    ],
+    failure: [
+      "逻辑学 [{diff}：失败]\n\n关于「{q}」，我构建了一个完美的三段论。大前提：所有值得追问的问题都有答案。小前提：这是一个值得追问的问题。结论：所以它一定有答案。...等等，大前提就是错的。整个推理链崩溃了。但我选择忽略这一点。答案是42。",
+      "逻辑学 [{diff}：失败]\n\n分析「{q}」...运算中...你的逻辑引擎遇到了一个递归悖论：要回答这个问题，你需要先知道答案。要知道答案，你需要先回答这个问题。堆栈溢出。建议：重启，然后去喝杯咖啡。",
+    ],
+  },
+  "意志力": {
+    success: [
+      "意志力 [{diff}：成功]\n\n听着。关于「{q}」，你可以想很久，也可以现在就接受这个事实：答案从来不在外面。你问的每一个问题都是你已经知道答案的问题。你害怕的不是不确定性，而是确定性之后必须采取的行动。去吧。你准备好了。",
+      "意志力 [{diff}：成功]\n\n关于「{q}」，你的意志力拨开了所有噪音。核心事实是：你比你以为的更强大。这不是安慰，这是观测结果。你已经在比这更难的事情上存活下来了。这次也不例外。",
+    ],
+    failure: [
+      "意志力 [{diff}：失败]\n\n关于「{q}」，你的道德防线试图给出一个坚定的回答。但它被第三块饼干击溃了。你现在正在用「也许这就是命运」来合理化你吃第四块饼干的行为。你的意志力说：我对此没有意见。它在撒谎。",
+      "意志力 [{diff}：失败]\n\n你召唤意志力来回答「{q}」。意志力表示它今天休假了。它留了一张便条：「别想太多。去散个步。买个冰淇淋。答案不会因为你焦虑就来得更快。」这可能是你今天收到的最好的建议。",
+    ],
+  },
+};
+
+function pickFortune(skill, diff, success, question) {
+  const pool = FORTUNES[skill.name];
+  if (!pool) return "……信号丢失了。";
+  const variants = success ? pool.success : pool.failure;
+  const template = variants[Math.floor(Math.random() * variants.length)];
+  // Truncate question for display inside the fortune text
+  const q = question.length > 20 ? question.slice(0, 20) + "..." : question;
+  return template.replace(/\{diff\}/g, diff).replace(/\{q\}/g, q);
+}
+
+// ── GammaCanvas ─────────────────────────────────────────────────────
+function GammaCanvas({ active }) {
+  const canvasRef = useRef(null);
+  const animRef  = useRef(null);
+  const timeRef  = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth  * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      // Reset transform before re-applying scale (fixes accumulation bug)
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      const numWaves = 5;
+      const gamma = 40;
+      timeRef.current += 0.016;
+      const t = timeRef.current;
+
+      for (let i = 0; i < numWaves; i++) {
+        const amp   = active ? 12 + i * 6  : 4 + i * 2;
+        const freq  = gamma * (0.8 + i * 0.15);
+        const alpha = active ? 0.15 + i * 0.08 : 0.06 + i * 0.03;
+        const yOff  = h * 0.3 + i * (h * 0.1);
+        const hue   = 260 + i * 25;
+
+        ctx.beginPath();
+        ctx.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
+        ctx.lineWidth   = 1.5;
+
+        for (let x = 0; x < w; x += 2) {
+          const progress = x / w;
+          const envelope = Math.sin(progress * Math.PI);
+          const noise    = Math.sin(x * 0.01 + t * 2 + i) * 3;
+          const y = yOff + Math.sin(progress * freq + t * (4 + i * 0.5)) * amp * envelope + noise;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      if (active) {
+        for (let i = 0; i < 3; i++) {
+          const x = (Math.sin(t * 1.3 + i * 2.1) * 0.5 + 0.5) * w;
+          const y = (Math.cos(t * 0.9 + i * 1.7) * 0.5 + 0.5) * h;
+          const grad = ctx.createRadialGradient(x, y, 0, x, y, 80);
+          grad.addColorStop(0, `hsla(${270 + i * 40}, 80%, 60%, 0.06)`);
+          grad.addColorStop(1, "transparent");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(animRef.current);
+    };
+  }, [active]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute", inset: 0,
+        width: "100%", height: "100%",
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+// ── DiceRoll ────────────────────────────────────────────────────────
+function DiceRoll({ result, onComplete }) {
+  const [current, setCurrent] = useState(0);
+  const [phase, setPhase]     = useState("rolling");
+  const rollCount = useRef(0);
+
+  useEffect(() => {
+    if (phase !== "rolling") return;
+    const interval = setInterval(() => {
+      setCurrent(Math.floor(Math.random() * 12) + 1);
+      rollCount.current++;
+      if (rollCount.current > 15) {
+        clearInterval(interval);
+        setCurrent(result);
+        setPhase("done");
+        setTimeout(onComplete, 600);
+      }
+    }, 80);
+    return () => clearInterval(interval);
+  }, [phase, result, onComplete]);
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "center",
+      gap: 16, margin: "20px 0",
+    }}>
+      <div style={{
+        width: 64, height: 64,
+        border: "2px solid rgba(179,136,255,0.6)",
+        borderRadius: 8,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 28,
+        fontFamily: "'EB Garamond', Georgia, serif",
+        color: phase === "done" ? (result >= 6 ? "#81c784" : "#ff6f61") : "#b388ff",
+        background: "rgba(20,10,30,0.6)",
+        transition: "color 0.3s",
+        fontWeight: 700,
+      }}>
+        {current || "?"}
+      </div>
+    </div>
+  );
+}
+
+// ── TypeWriter ──────────────────────────────────────────────────────
+function TypeWriter({ text, speed = 25, onDone }) {
+  const [displayed, setDisplayed] = useState("");
+  const idx = useRef(0);
+
+  useEffect(() => {
+    idx.current = 0;
+    setDisplayed("");
+  }, [text]);
+
+  useEffect(() => {
+    if (idx.current < text.length) {
+      const timer = setTimeout(() => {
+        idx.current++;
+        setDisplayed(text.slice(0, idx.current));
+        if (idx.current >= text.length && onDone) onDone();
+      }, speed);
+      return () => clearTimeout(timer);
+    }
+  }, [displayed, text, speed, onDone]);
+
+  return (
+    <span>
+      {displayed}
+      <span style={{
+        opacity: displayed.length < text.length ? 1 : 0,
+        transition: "opacity 0.3s",
+      }}>&#9612;</span>
+    </span>
+  );
+}
+
+// ── Main Component ──────────────────────────────────────────────────
+function CyberFortune() {
+  const [question, setQuestion]       = useState("");
+  const [phase, setPhase]             = useState("idle");
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [difficulty, setDifficulty]   = useState("");
+  const [diceResult, setDiceResult]   = useState(0);
+  const [passed, setPassed]           = useState(false);
+  const [fortune, setFortune]         = useState("");
+
+  const handleAsk = () => {
+    if (!question.trim()) return;
+    const skill    = SKILLS[Math.floor(Math.random() * SKILLS.length)];
+    const diffIdx  = Math.floor(Math.random() * DIFFICULTIES.length);
+    const diff     = DIFFICULTIES[diffIdx];
+    const threshold = 3 + diffIdx * 2;
+    const roll     = Math.floor(Math.random() * 12) + 1;
+    const success  = roll >= threshold;
+
+    setSelectedSkill(skill);
+    setDifficulty(diff);
+    setDiceResult(roll);
+    setPassed(success);
+    setFortune("");
+    setPhase("selecting");
+
+    setTimeout(() => setPhase("rolling"), 1500);
+  };
+
+  const handleRollComplete = useCallback(() => {
+    const text = pickFortune(selectedSkill, difficulty, passed, question);
+    setFortune(text);
+    setPhase("revealing");
+  }, [selectedSkill, difficulty, passed, question]);
+
+  const reset = () => {
+    setPhase("idle");
+    setQuestion("");
+    setSelectedSkill(null);
+    setFortune("");
+  };
+
+  const cardStyle = (skill) => ({
+    background: "rgba(20,10,40,0.6)",
+    border: `1px solid ${(skill?.color || "#b388ff")}33`,
+    borderRadius: 12,
+    padding: 28,
+  });
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(170deg, #0a0612 0%, #120824 40%, #0d0a1a 100%)",
+      position: "relative",
+      overflow: "hidden",
+      fontFamily: "'EB Garamond', 'Noto Serif SC', Georgia, serif",
+    }}>
+      <GammaCanvas active={phase !== "idle"} />
+
+      <div style={{
+        position: "relative", zIndex: 1,
+        maxWidth: 560, margin: "0 auto",
+        padding: "80px 24px 60px",
+      }}>
+        {/* Title */}
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{
+            fontSize: 11, letterSpacing: 6,
+            color: "rgba(179,136,255,0.5)",
+            textTransform: "uppercase", marginBottom: 12,
+          }}>
+            Gamma Wave Divination System
+          </div>
+          <h1 style={{
+            fontSize: 36, color: "#e8dff0", margin: 0,
+            fontWeight: 700, letterSpacing: 2,
+          }}>
+            赛博算命
+          </h1>
+          <div style={{
+            width: 60, height: 1,
+            background: "linear-gradient(90deg, transparent, #b388ff, transparent)",
+            margin: "16px auto",
+          }} />
+          <p style={{
+            color: "rgba(200,180,220,0.5)", fontSize: 13,
+            margin: 0, fontStyle: "italic",
+          }}>
+            skill check your destiny
+          </p>
+        </div>
+
+        {/* ── Idle: Question Input ── */}
+        {phase === "idle" && (
+          <div style={{ animation: "fadeIn 0.5s ease" }}>
+            <div style={{
+              background: "rgba(20,10,40,0.5)",
+              border: "1px solid rgba(179,136,255,0.15)",
+              borderRadius: 12, padding: 24,
+              backdropFilter: "blur(10px)",
+            }}>
+              <label style={{
+                display: "block", fontSize: 13,
+                color: "rgba(179,136,255,0.7)",
+                marginBottom: 10, letterSpacing: 1,
+              }}>
+                向以太提问
+              </label>
+              <textarea
+                value={question}
+                onChange={e => setQuestion(e.target.value)}
+                placeholder="今天的实验数据会不会好看？我的猫会原谅我出门吗？..."
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAsk();
+                  }
+                }}
+                style={{
+                  width: "100%", minHeight: 80,
+                  background: "rgba(10,5,20,0.6)",
+                  border: "1px solid rgba(179,136,255,0.2)",
+                  borderRadius: 8, color: "#e0d6ec",
+                  fontSize: 16,
+                  fontFamily: "'Noto Serif SC', serif",
+                  padding: 14, resize: "none", outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+              <button
+                onClick={handleAsk}
+                disabled={!question.trim()}
+                style={{
+                  marginTop: 14, width: "100%", padding: "12px 0",
+                  background: question.trim()
+                    ? "rgba(179,136,255,0.15)"
+                    : "rgba(60,40,80,0.2)",
+                  border: `1px solid ${
+                    question.trim()
+                      ? "rgba(179,136,255,0.4)"
+                      : "rgba(100,80,120,0.2)"
+                  }`,
+                  borderRadius: 8,
+                  color: question.trim()
+                    ? "#c9b8e8"
+                    : "rgba(160,140,180,0.3)",
+                  fontSize: 15,
+                  fontFamily: "'EB Garamond', serif",
+                  letterSpacing: 2,
+                  cursor: question.trim() ? "pointer" : "default",
+                  transition: "all 0.3s",
+                }}
+              >
+                掷骰
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Selecting: Skill reveal ── */}
+        {phase === "selecting" && selectedSkill && (
+          <div style={{ textAlign: "center", animation: "fadeIn 0.4s ease" }}>
+            <div style={cardStyle(selectedSkill)}>
+              <div style={{
+                fontSize: 12, color: "rgba(200,180,220,0.5)",
+                letterSpacing: 3, marginBottom: 8,
+              }}>
+                技能激活
+              </div>
+              <div style={{
+                fontSize: 28, color: selectedSkill.color,
+                fontWeight: 700, marginBottom: 4,
+              }}>
+                {selectedSkill.name}
+              </div>
+              <div style={{
+                fontSize: 14, color: "rgba(200,180,220,0.4)",
+                fontStyle: "italic",
+              }}>
+                {selectedSkill.en}
+              </div>
+              <div style={{
+                margin: "16px auto", width: 40, height: 1,
+                background: `linear-gradient(90deg, transparent, ${selectedSkill.color}66, transparent)`,
+              }} />
+              <div style={{ fontSize: 13, color: "rgba(200,180,220,0.6)" }}>
+                {selectedSkill.desc}
+              </div>
+              <div style={{
+                marginTop: 16, fontSize: 14,
+                color: "rgba(255,255,255,0.5)",
+              }}>
+                难度：<span style={{ color: selectedSkill.color }}>{difficulty}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Rolling: Dice animation ── */}
+        {phase === "rolling" && selectedSkill && (
+          <div style={{ textAlign: "center", animation: "fadeIn 0.3s ease" }}>
+            <div style={cardStyle(selectedSkill)}>
+              <div style={{
+                fontSize: 16, color: selectedSkill.color,
+                fontWeight: 700, marginBottom: 4,
+              }}>
+                {selectedSkill.name}
+              </div>
+              <div style={{
+                fontSize: 12, color: "rgba(200,180,220,0.4)",
+                marginBottom: 12,
+              }}>
+                难度：{difficulty}
+              </div>
+              <DiceRoll result={diceResult} onComplete={handleRollComplete} />
+            </div>
+          </div>
+        )}
+
+        {/* ── Revealing / Done: Fortune text ── */}
+        {(phase === "revealing" || phase === "done") && selectedSkill && (
+          <div style={{ animation: "fadeIn 0.5s ease" }}>
+            <div style={cardStyle(selectedSkill)}>
+              {/* Header */}
+              <div style={{
+                display: "flex", alignItems: "center",
+                gap: 12, marginBottom: 16,
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: `${selectedSkill.color}22`,
+                  border: `1.5px solid ${selectedSkill.color}55`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 14, color: selectedSkill.color, fontWeight: 700,
+                }}>
+                  {diceResult}
+                </div>
+                <div>
+                  <div style={{
+                    fontSize: 16, color: selectedSkill.color, fontWeight: 700,
+                  }}>
+                    {selectedSkill.name}
+                  </div>
+                  <div style={{
+                    fontSize: 11, letterSpacing: 1,
+                    color: passed
+                      ? "rgba(129,199,132,0.7)"
+                      : "rgba(255,111,97,0.7)",
+                  }}>
+                    {difficulty} &middot; {passed ? "成功" : "失败"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Question echo */}
+              <div style={{
+                fontSize: 13, color: "rgba(200,180,220,0.35)",
+                fontStyle: "italic", marginBottom: 16,
+                paddingBottom: 16,
+                borderBottom: "1px solid rgba(179,136,255,0.08)",
+              }}>
+                &laquo;{question}&raquo;
+              </div>
+
+              {/* Fortune text */}
+              <div style={{
+                fontSize: 16, lineHeight: 1.8,
+                color: "#dcd0ec", minHeight: 80,
+                whiteSpace: "pre-wrap",
+              }}>
+                {fortune ? (
+                  <TypeWriter text={fortune} speed={30} onDone={() => setPhase("done")} />
+                ) : null}
+              </div>
+
+              {/* Reset */}
+              {phase === "done" && (
+                <button
+                  onClick={reset}
+                  style={{
+                    marginTop: 24, width: "100%", padding: "11px 0",
+                    background: "rgba(179,136,255,0.08)",
+                    border: "1px solid rgba(179,136,255,0.2)",
+                    borderRadius: 8,
+                    color: "rgba(179,136,255,0.6)",
+                    fontSize: 14,
+                    fontFamily: "'EB Garamond', serif",
+                    letterSpacing: 2, cursor: "pointer",
+                  }}
+                >
+                  再问一卦
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<CyberFortune />);
+  </script>
+</body>
+</html>
