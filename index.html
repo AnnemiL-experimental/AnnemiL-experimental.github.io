@@ -320,76 +320,6 @@
     margin-top: 0.75rem;
   }
 
-  .poster-feature {
-    margin-top: 3rem;
-    padding: 1.2rem;
-    border: 1px solid var(--dark-gray);
-    background: rgba(255,255,255,0.015);
-  }
-
-  .poster-feature h3 {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 1rem;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.4rem;
-  }
-
-  .poster-feature p {
-    font-size: 0.76rem;
-    color: var(--gray);
-    line-height: 1.8;
-    margin-bottom: 1rem;
-  }
-
-  .poster-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.8rem;
-  }
-
-  .poster-card {
-    position: relative;
-    display: block;
-    min-height: 230px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: var(--dark-gray);
-    text-decoration: none;
-  }
-
-  .poster-card img {
-    width: 100%;
-    height: 100%;
-    min-height: 230px;
-    object-fit: cover;
-    display: block;
-    filter: grayscale(100%) contrast(1.08);
-    opacity: 0.72;
-    transition: filter 0.5s ease, transform 0.5s ease, opacity 0.5s ease;
-  }
-
-  .poster-card:hover img {
-    filter: grayscale(0%) contrast(1);
-    transform: scale(1.02);
-    opacity: 0.95;
-  }
-
-  .poster-card span {
-    position: absolute;
-    left: 0.8rem;
-    bottom: 0.8rem;
-    right: 0.8rem;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.58rem;
-    color: var(--white);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: rgba(8,8,8,0.72);
-    padding: 0.45rem 0.55rem;
-  }
-
-
   /* ─── Education ─── */
   .edu-list { display: flex; flex-direction: column; gap: 2rem; }
 
@@ -459,6 +389,7 @@
     position: relative; overflow: hidden;
     scroll-snap-align: start; cursor: grab;
     background: var(--dark-gray);
+    color: inherit; text-decoration: none;
   }
   .series-item:active { cursor: grabbing; }
 
@@ -678,7 +609,6 @@
     .series-item { width: 280px; height: 280px; }
     .photo-frame { width: 300px; height: 200px; }
     .interests-layout { grid-template-columns: 1fr; gap: 2rem; }
-    .poster-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 480px) {
@@ -921,23 +851,32 @@
     <p class="gallery-desc">drawing · photography · calligraphy · things I make</p>
   </div>
 
-
-  <div class="poster-feature fade-in">
-    <h3>研究海报 · Research Posters</h3>
-    <p>Two recent project posters: behavioral neuroscience work on defensive behavior in mice, and the P.I.P. senior capstone glucose biosensor.</p>
-    <div class="poster-grid">
-      <a class="poster-card" href="gallery/defensive-behavior-poster.png" target="_blank">
-        <img src="gallery/defensive-behavior-poster.png" alt="Internal State-Dependent Modulation of Defensive Behavior in Mice poster" loading="lazy">
-        <span>Defensive Behavior in Mice · Poster</span>
-      </a>
-      <a class="poster-card" href="gallery/pip-poster.png" target="_blank">
-        <img src="gallery/pip-poster.png" alt="P.I.P. Personal Insulin Pal poster" loading="lazy">
-        <span>P.I.P. Personal Insulin Pal · Poster</span>
-      </a>
-    </div>
-  </div>
-
   <div class="gallery-grid fade-in">
+    <!-- Research Posters -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">研究海报 · Research Posters</h3>
+        <p class="series-desc">Behavioral neuroscience and biomedical engineering project posters</p>
+      </div>
+      <div class="series-scroll">
+        <a class="series-item" style="width:480px;height:270px;" href="gallery/defensive-behavior-poster.png" target="_blank"><img src="gallery/defensive-behavior-poster.png" alt="Internal State-Dependent Modulation of Defensive Behavior in Mice poster" loading="lazy"><div class="s-overlay"><h4>Defensive Behavior in Mice</h4><p>Poster</p></div></a>
+        <a class="series-item" style="width:480px;height:270px;" href="gallery/pip-poster.png" target="_blank"><img src="gallery/pip-poster.png" alt="P.I.P. Personal Insulin Pal poster" loading="lazy"><div class="s-overlay"><h4>P.I.P. Personal Insulin Pal</h4><p>Poster</p></div></a>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+
+    <!-- My Worship -->
+    <div class="gallery-series">
+      <div class="series-header">
+        <h3 class="series-title">爱人 · My Worship</h3>
+        <p class="series-desc">White line on black — beloved</p>
+      </div>
+      <div class="series-scroll">
+        <div class="series-item"><img src="gallery/my-worship.jpg" alt="White line portrait on black" loading="lazy"><div class="s-overlay"><h4>My Worship</h4><p>Drawing</p></div></div>
+      </div>
+      <p class="series-hint">scroll →</p>
+    </div>
+
     <!-- Individuals Series -->
     <div class="gallery-series">
       <div class="series-header">
