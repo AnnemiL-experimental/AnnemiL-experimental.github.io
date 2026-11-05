@@ -881,6 +881,44 @@ a.status:active { transform: translate(3px, 3px); box-shadow: 0 0 0 transparent;
 
 .project-links { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.1rem; }
 
+/* Shaped status links: frames.js draws the chapter's outline behind the label
+   (face + hard shadow plate); the CSS border and box shadow step aside. */
+.status.shaped {
+  position: relative; isolation: isolate;
+  border-color: transparent; background: none; box-shadow: none;
+}
+a.status.shaped:hover { background: none; box-shadow: none; }
+.btn-shape {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; z-index: -1; pointer-events: none;
+}
+.btn-shape .face {
+  fill: var(--panel); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round;
+  transition: fill var(--t-hover) steps(2, end);
+}
+.btn-shape .fold { fill: var(--print, var(--hot)); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.btn-shape .plate {
+  fill: var(--ink);
+  transform: translate(3px, 3px);
+  transition: transform var(--t-press) var(--ease-out), fill var(--t-hover) steps(2, end);
+}
+.status.prep .btn-shape .face { stroke: var(--graphite); stroke-dasharray: 5 4; }
+.status.prep .btn-shape .plate { display: none; }
+a.status.shaped:hover .btn-shape .face { fill: var(--ink); }
+a.status.shaped:hover .btn-shape .plate { fill: var(--print, var(--hot)); transform: translate(4px, 4px); }
+a.status.shaped:active .btn-shape .plate { transform: none; }
+
+/* Breathing room for points, slants and curves at button size. */
+.status[data-btn="hexagon"],
+.status[data-btn="arrow"]         { padding-inline: 1.15rem; }
+.status[data-btn="arrow"]         { padding-left: 0.8rem; }
+.status[data-btn="parallelogram"],
+.status[data-btn="trapezoid"]     { padding-inline: 1.1rem; }
+.status[data-btn="dogear"]        { padding-right: 1.3rem; }
+.status[data-btn="ellipse"]       { padding: 0.55rem 1.35rem; }
+.status[data-btn="stadium"]       { padding-inline: 1rem; }
+.status[data-btn="ticket"]        { padding-inline: 1rem; }
+
 /* PanelTransition: chosen chapter SMASHES forward, the rest drop back. */
 @keyframes smash {
   0%   { transform: scale(1); }
