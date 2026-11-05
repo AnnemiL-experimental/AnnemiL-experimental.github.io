@@ -1075,6 +1075,7 @@ a.status.shaped:active .btn-shape .plate { transform: none; }
   color: var(--graphite); margin: 0.35rem 0 1.2rem;
 }
 .archive-intro { font-size: 0.8rem; line-height: 1.85; max-width: 34ch; }
+.archive-intro + .archive-intro { margin-top: 0.9rem; color: var(--graphite); }
 
 /* Layout slots: width (span) and start column. */
 .ra-w4 { grid-column-end: span 4; }
@@ -1213,7 +1214,7 @@ html.lb-open { overflow: hidden; }
 .lb-close { position: absolute; top: clamp(0.9rem, 3vw, 2.2rem); right: clamp(0.9rem, 3vw, 2.2rem); z-index: 1; }
 
 /* ═══ Misc ════════════════════════════════════════════════════ */
-.interests-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; }
+.interests-layout { display: grid; grid-template-columns: 1fr; gap: 3.5rem; }
 
 .int-block h3 {
   font-family: var(--serif);
