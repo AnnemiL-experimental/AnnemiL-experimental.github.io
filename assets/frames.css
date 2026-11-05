@@ -1046,6 +1046,172 @@ a.status.shaped:active .btn-shape .plate { transform: none; }
   .series-item img { filter: grayscale(30%); }
 }
 
+/* ═══ Archive: Ruguo Youth ═════════════════════════════════════
+   The comic provides the frame; the photographs stay untouched —
+   no filters, no crops, no transforms on the image itself. */
+.archive {
+  position: relative;
+  margin-top: 5.5rem; padding-top: 3rem;
+  border-top: var(--edge) solid var(--ink);
+}
+.archive-grid {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 3rem 1.8rem; align-items: start;
+}
+
+.archive-head { grid-column: 1 / 5; align-self: end; position: relative; isolation: isolate; padding-bottom: 2.2rem; }
+.archive-head .halftone { top: -1.4rem; left: -1.2rem; width: 70%; height: 9rem; opacity: 0.35; z-index: -1; }
+.archive-label {
+  display: inline-block;
+  font-family: var(--label); font-weight: 700;
+  font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 0.2rem 0.55rem; margin-bottom: 1rem;
+  border: 2px solid var(--ink); background: var(--panel);
+  transform: rotate(-2deg);
+}
+.archive-head .series-title { font-size: 1.35rem; line-height: 1.4; }
+.archive-sub {
+  font-family: var(--label); font-size: 0.66rem; letter-spacing: 0.12em;
+  color: var(--graphite); margin: 0.35rem 0 1.2rem;
+}
+.archive-intro { font-size: 0.8rem; line-height: 1.85; max-width: 34ch; }
+
+/* Layout slots: width (span) and start column. */
+.ra-w4 { grid-column-end: span 4; }
+.ra-w5 { grid-column-end: span 5; }
+.ra-w6 { grid-column-end: span 6; }
+.ra-w8 { grid-column-end: span 8; }
+.ra-c2 { grid-column-start: 2; }
+.ra-c7 { grid-column-start: 7; }
+.ra-panel { margin: 0; min-width: 0; }
+.ra-panel.ra-drop { margin-top: 3.2rem; }
+.ra-panel:nth-of-type(odd)  { --print: color-mix(in srgb, var(--cyan) 42%, var(--paper)); }
+.ra-panel:nth-of-type(even) { --print: color-mix(in srgb, var(--hot) 38%, var(--paper)); }
+
+.ra-frame {
+  position: relative; isolation: isolate; display: block;
+  padding: 7px; background: var(--panel);
+  color: inherit; text-decoration: none; cursor: zoom-in;
+}
+/* Thin outline (drawn in on reveal) and an offset printed plate (on hover). */
+.ra-frame::before, .ra-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.ra-frame::before {
+  border: 2px solid var(--ink); z-index: 1;
+  transition: transform var(--t-hover) steps(2, end), clip-path var(--t-panel) steps(6, end);
+}
+.ra-frame::after {
+  z-index: -1;
+  background: var(--print);
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 22%, transparent) 1.2px, transparent 1.6px);
+  background-size: 6px 6px;
+  transform: translate(0, 0); opacity: 0;
+  transition: transform var(--t-hover) steps(2, end), opacity var(--t-hover) steps(2, end);
+}
+.ra-frame img {
+  display: block; width: 100%; height: auto;
+  background: color-mix(in srgb, var(--ink) 8%, var(--panel));
+}
+.ra-frame:hover::before, .ra-frame:focus-visible::before { transform: translate(-4px, -4px); }
+.ra-frame:hover::after, .ra-frame:focus-visible::after { transform: translate(9px, 9px); opacity: 1; }
+.ra-frame:focus-visible { outline-offset: 6px; }
+@keyframes edge-split {
+  0%   { box-shadow: -3px 0 0 var(--hot), 3px 0 0 var(--cyan); }
+  50%  { box-shadow: 2px 1px 0 var(--hot), -2px -1px 0 var(--cyan); }
+  100% { box-shadow: none; }
+}
+@media (hover: hover) {
+  .ra-frame:hover::before { animation: edge-split calc(var(--frame) * 3) steps(1, end); }
+}
+
+.ra-panel figcaption {
+  display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap;
+  margin-top: 0.75rem;
+  font-family: var(--label); font-size: 0.66rem; letter-spacing: 0.06em;
+}
+.ra-no { font-weight: 700; color: var(--graphite); letter-spacing: 0.12em; }
+
+.archive-note {
+  margin-top: 3.4rem; padding-top: 1rem; max-width: 60ch;
+  border-top: 1px dashed var(--rule);
+  font-family: var(--label); font-size: 0.62rem; line-height: 1.9;
+  color: var(--graphite); letter-spacing: 0.04em;
+}
+.archive-note a { color: var(--ink); text-underline-offset: 3px; }
+
+/* Entrance: label → outline → photo, supporting panels staggered. */
+.js .archive-head > :not(.halftone) { opacity: 0; transition: opacity var(--t-reveal) var(--ease-out); }
+.js .archive-head .archive-label { transform: scale(0) rotate(-14deg); transition: transform 300ms var(--ease-smash), opacity 1ms; }
+.js .archive-head.visible > * { opacity: 1; }
+.js .archive-head.visible .archive-label { transform: rotate(-2deg); }
+.js .archive-head.visible > :not(.archive-label) { transition-delay: 160ms; }
+.js .ra-panel .ra-frame::before { clip-path: inset(0 100% 100% 0); }
+.js .ra-panel .ra-frame img, .js .ra-panel figcaption {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity var(--t-reveal) var(--ease-out), transform var(--t-reveal) steps(3, end);
+}
+.js .ra-panel .ra-frame::before { transition-delay: calc(var(--i, 0) * 90ms); }
+.js .ra-panel .ra-frame img { transition-delay: calc(var(--i, 0) * 90ms + 300ms); }
+.js .ra-panel figcaption { transition-delay: calc(var(--i, 0) * 90ms + 420ms); }
+.js .ra-panel.visible .ra-frame::before { clip-path: inset(0); }
+.js .ra-panel.visible .ra-frame img, .js .ra-panel.visible figcaption { opacity: 1; transform: none; }
+/* After the entrance, hover responds immediately. */
+.js .ra-panel.is-settled .ra-frame::before { transition-delay: 0ms; }
+
+@media (max-width: 960px) {
+  .archive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.6rem 1.6rem; }
+  .archive-head { grid-column: 1 / -1; padding-bottom: 0; }
+  .ra-panel:nth-of-type(n) { grid-column: auto; }
+  .ra-panel:first-of-type { grid-column: 1 / -1; }
+  .ra-panel.ra-drop { margin-top: 0; }
+  .archive-intro { max-width: 52ch; }
+}
+@media (max-width: 720px) {
+  .archive { margin-top: 4rem; }
+  .archive-grid { grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
+  .ra-frame { padding: 5px; }
+}
+
+/* ─── Lightbox (shared; built by frames.js for any a[data-lightbox]) ─── */
+html.lb-open { overflow: hidden; }
+.lightbox {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; border: 0;
+  padding: clamp(0.9rem, 3vw, 2.2rem);
+  background: var(--paper); color: var(--ink);
+}
+.lightbox[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 1.1rem; }
+.lightbox::backdrop { background: rgba(14, 14, 16, 0.6); }
+.lb-stage { min-height: 0; display: grid; place-items: center; touch-action: pan-y; }
+.lb-img {
+  max-width: 100%; max-height: 100%; width: auto; height: auto;
+  padding: 7px; border: 2px solid var(--ink); background: var(--panel);
+  box-shadow: 9px 9px 0 color-mix(in srgb, var(--cyan) 42%, var(--paper));
+}
+.lightbox.is-turn .lb-img { opacity: 0.55; }
+.lb-bar {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem;
+  max-width: var(--wide); width: 100%; margin: 0 auto;
+}
+.lb-text { min-width: 0; text-align: center; }
+.lb-count { font-family: var(--label); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.16em; color: var(--graphite); }
+.lb-caption { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; letter-spacing: 0.03em; }
+.lb-meta { font-family: var(--label); font-size: 0.62rem; letter-spacing: 0.06em; color: var(--graphite); }
+.lb-meta:empty { display: none; }
+.lb-meta a { color: var(--ink); }
+.lb-btn {
+  display: inline-grid; place-items: center;
+  width: 2.8rem; height: 2.8rem;
+  border: var(--edge) solid var(--ink); background: var(--panel); color: var(--ink);
+  font-family: var(--label); font-weight: 700; font-size: 1rem;
+  cursor: pointer; box-shadow: 4px 4px 0 var(--ink);
+  transition: transform var(--t-press) var(--ease-out), box-shadow var(--t-press) var(--ease-out);
+}
+.lb-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--hot); }
+.lb-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+.lb-btn[hidden] { visibility: hidden; display: inline-grid; }
+.lb-close { position: absolute; top: clamp(0.9rem, 3vw, 2.2rem); right: clamp(0.9rem, 3vw, 2.2rem); z-index: 1; }
+
 /* ═══ Misc ════════════════════════════════════════════════════ */
 .interests-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; }
 

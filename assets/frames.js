@@ -293,7 +293,7 @@
 
   // ─── Scroll storytelling ───
   function initReveal() {
-    const targets = document.querySelectorAll('.fade-in, .research-item, .gallery-series, .signal-divider');
+    const targets = document.querySelectorAll('.fade-in, .research-item, .gallery-series, .signal-divider, .archive-head, .ra-panel');
     document.querySelectorAll('.edu-item').forEach((el, i) => el.style.setProperty('--i', i));
     if (!('IntersectionObserver' in window)) {
       targets.forEach((el) => el.classList.add('visible'));
@@ -301,7 +301,10 @@
     }
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+        if (e.target.classList.contains('ra-panel')) setTimeout(() => e.target.classList.add('is-settled'), 1200);
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     targets.forEach((el) => obs.observe(el));
@@ -347,6 +350,114 @@
     row.scrollBy({ left: e.deltaY * 2, behavior: 'auto' });
   }, { passive: false });
 
+  // ─── Archive: stagger panels that share a row (intro photo follows the header) ───
+  function initArchive() {
+    const stagger = (grid) => {
+      let rowTop = -Infinity, n = 0;
+      grid.querySelectorAll('.ra-panel').forEach((p, k) => {
+        const top = p.offsetTop;
+        n = Math.abs(top - rowTop) > 120 ? 0 : n + 1;
+        if (n === 0) rowTop = top;
+        p.style.setProperty('--i', k === 0 ? 2 : n);
+      });
+    };
+    const ro = new ResizeObserver((entries) => entries.forEach((e) => stagger(e.target)));
+    document.querySelectorAll('.archive-grid').forEach((grid) => { stagger(grid); ro.observe(grid); });
+  }
+
+  // ─── Lightbox: any a[data-lightbox="group"] opens in a modal viewer.
+  // Caption comes from the figure's .ra-cap; optional data-* on the figure add metadata. ───
+  function initLightbox() {
+    const links = [...document.querySelectorAll('a[data-lightbox]')];
+    if (!links.length || typeof HTMLDialogElement !== 'function') return;
+    const groups = {};
+    links.forEach((a) => (groups[a.dataset.lightbox] = groups[a.dataset.lightbox] || []).push(a));
+
+    const dlg = document.createElement('dialog');
+    dlg.className = 'lightbox';
+    dlg.setAttribute('aria-label', 'Photo viewer');
+    dlg.innerHTML =
+      '<button type="button" class="lb-btn lb-close" aria-label="Close viewer">✕</button>' +
+      '<div class="lb-stage"><img class="lb-img" alt="" decoding="async"></div>' +
+      '<div class="lb-bar">' +
+        '<button type="button" class="lb-btn lb-prev" aria-label="Previous photograph">←</button>' +
+        '<div class="lb-text" aria-live="polite"><p class="lb-count"></p><p class="lb-caption"></p><p class="lb-meta"></p></div>' +
+        '<button type="button" class="lb-btn lb-next" aria-label="Next photograph">→</button>' +
+      '</div>';
+    document.body.appendChild(dlg);
+    const $ = (s) => dlg.querySelector(s);
+    const img = $('.lb-img'), stage = $('.lb-stage');
+    let set = [], idx = 0, opener = null, swiped = false;
+    const pad = (v) => String(v).padStart(2, '0');
+
+    function show(i) {
+      idx = (i + set.length) % set.length;
+      const a = set[idx], fig = a.closest('figure'), thumb = a.querySelector('img');
+      const d = (fig && fig.dataset) || {};
+      img.src = a.href;
+      img.alt = thumb ? thumb.alt : '';
+      if (thumb) { img.setAttribute('width', thumb.getAttribute('width')); img.setAttribute('height', thumb.getAttribute('height')); }
+      $('.lb-count').textContent = pad(idx + 1) + ' / ' + pad(set.length);
+      const cap = fig && (fig.querySelector('.ra-cap') || fig.querySelector('figcaption'));
+      $('.lb-caption').textContent = cap ? cap.textContent.trim() : '';
+      const meta = $('.lb-meta');
+      // Credit: per-photo data-credit, else the collection's.
+      const credit = (a.closest('[data-credit]') || { dataset: {} }).dataset.credit;
+      meta.textContent = [d.event, d.location, d.year, credit].filter(Boolean).join(' · ');
+      if (d.source && /^https?:\/\//.test(d.source)) {
+        const src = document.createElement('a');
+        src.href = d.source; src.target = '_blank'; src.rel = 'noopener';
+        src.textContent = 'Original publication ↗';
+        if (meta.textContent) meta.append(' · ');
+        meta.append(src);
+      }
+      $('.lb-prev').hidden = $('.lb-next').hidden = set.length < 2;
+      pulse(dlg, 'is-turn', FRAME * 2);
+      [set[idx + 1], set[idx - 1]].forEach((n) => { if (n) new Image().src = n.href; });
+    }
+
+    links.forEach((a) => a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+      e.preventDefault();
+      set = groups[a.dataset.lightbox];
+      opener = a;
+      show(set.indexOf(a));
+      root.classList.add('lb-open');
+      dlg.showModal();
+      $('.lb-close').focus();
+    }));
+
+    $('.lb-prev').addEventListener('click', () => show(idx - 1));
+    $('.lb-next').addEventListener('click', () => show(idx + 1));
+    $('.lb-close').addEventListener('click', () => dlg.close());
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); }
+    });
+    // Clicking the empty area around the photo closes the viewer.
+    dlg.addEventListener('click', (e) => {
+      if (swiped) { swiped = false; return; }
+      if (e.target === dlg || e.target === stage) dlg.close();
+    });
+    dlg.addEventListener('close', () => {
+      root.classList.remove('lb-open');
+      img.removeAttribute('src');
+      // Return focus to the photo last viewed, so the reader keeps their place.
+      (set[idx] || opener)?.focus();
+    });
+
+    // Touch: horizontal swipe on the photo steps through the set.
+    let x0 = null, y0 = 0;
+    stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') { x0 = e.clientX; y0 = e.clientY; } });
+    stage.addEventListener('pointerup', (e) => {
+      if (x0 === null) return;
+      const dx = e.clientX - x0, dy = e.clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) { swiped = true; show(idx + (dx < 0 ? 1 : -1)); }
+    });
+    stage.addEventListener('pointercancel', () => { x0 = null; });
+  }
+
   // ─── Boot ───
   applyMotion();
   applyTheme(store.get('theme') || 'paper');
@@ -355,7 +466,9 @@
   document.querySelectorAll('.signal-divider').forEach(buildDivider);
   initCover();
   initResearch();
+  initArchive();
   initReveal();
+  initLightbox();
 
   document.querySelector('.theme-toggle')?.addEventListener('click', () => {
     const next = root.dataset.theme === 'paper' ? 'ink' : 'paper';
