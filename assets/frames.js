@@ -174,20 +174,21 @@
   const SHAPES = ['hexagon', 'bubble', 'octagon', 'ellipse', 'parallelogram', 'dogear', 'arrow', 'stadium', 'trapezoid', 'ticket'];
   const NS = 'http://www.w3.org/2000/svg';
 
-  function shapePath(kind, w, h) {
+  // `k` scales the fixed geometry (cuts, radii, tail) so buttons can share the outline.
+  function shapePath(kind, w, h, k = 1) {
     const i = 2, R = w - i, B = h - i, cy = h / 2;
     const rounded = (r) => `M${i + r},${i} H${R - r} A${r},${r} 0 0 1 ${R},${i + r} V${B - r} A${r},${r} 0 0 1 ${R - r},${B} H${i + r} A${r},${r} 0 0 1 ${i},${B - r} V${i + r} A${r},${r} 0 0 1 ${i + r},${i} Z`;
     switch (kind) {
-      case 'hexagon': { const c = Math.min(46, h * 0.3); return { d: `M${i + c},${i} H${R - c} L${R},${cy} L${R - c},${B} H${i + c} L${i},${cy} Z` }; }
-      case 'octagon': { const c = 26; return { d: `M${i + c},${i} H${R - c} L${R},${i + c} V${B - c} L${R - c},${B} H${i + c} L${i},${B - c} V${i + c} Z` }; }
+      case 'hexagon': { const c = Math.min(46 * k, h * 0.3); return { d: `M${i + c},${i} H${R - c} L${R},${cy} L${R - c},${B} H${i + c} L${i},${cy} Z` }; }
+      case 'octagon': { const c = 26 * k; return { d: `M${i + c},${i} H${R - c} L${R},${i + c} V${B - c} L${R - c},${B} H${i + c} L${i},${B - c} V${i + c} Z` }; }
       case 'ellipse': return { d: `M${i},${cy} A${w / 2 - i},${cy - i} 0 1 0 ${R},${cy} A${w / 2 - i},${cy - i} 0 1 0 ${i},${cy} Z` };
-      case 'parallelogram': { const s = 30; return { d: `M${i + s},${i} H${R} L${R - s},${B} H${i} Z` }; }
-      case 'dogear': { const f = 54; return { d: `M${i},${i} H${R - f} L${R},${i + f} V${B} H${i} Z`, fold: `M${R - f},${i} V${i + f} H${R} Z` }; }
-      case 'arrow': { const a = Math.min(52, h * 0.3); return { d: `M${i},${i} H${R - a} L${R},${cy} L${R - a},${B} H${i} Z` }; }
-      case 'stadium': return { d: rounded(Math.min(cy - i, 70)) };
-      case 'trapezoid': { const t = 28; return { d: `M${i + t},${i} H${R - t} L${R},${B} H${i} Z` }; }
-      case 'ticket': { const r = 16; return { d: `M${i},${i} H${R} V${cy - r} A${r},${r} 0 0 0 ${R},${cy + r} V${B} H${i} V${cy + r} A${r},${r} 0 0 0 ${i},${cy - r} Z` }; }
-      case 'bubble': { const r = 26; return { d: `M${i + r},${i} H${R - r} A${r},${r} 0 0 1 ${R},${i + r} V${B - r} A${r},${r} 0 0 1 ${R - r},${B} H${i + r + 84} L${i + 30},${B + 24} L${i + r + 40},${B} H${i + r} A${r},${r} 0 0 1 ${i},${B - r} V${i + r} A${r},${r} 0 0 1 ${i + r},${i} Z` }; }
+      case 'parallelogram': { const s = 30 * k; return { d: `M${i + s},${i} H${R} L${R - s},${B} H${i} Z` }; }
+      case 'dogear': { const f = Math.min(54 * k, h * 0.45); return { d: `M${i},${i} H${R - f} L${R},${i + f} V${B} H${i} Z`, fold: `M${R - f},${i} V${i + f} H${R} Z` }; }
+      case 'arrow': { const a = Math.min(52 * k, h * 0.3); return { d: `M${i},${i} H${R - a} L${R},${cy} L${R - a},${B} H${i} Z` }; }
+      case 'stadium': return { d: rounded(Math.min(cy - i, 70 * k)) };
+      case 'trapezoid': { const t = 28 * k; return { d: `M${i + t},${i} H${R - t} L${R},${B} H${i} Z` }; }
+      case 'ticket': { const r = Math.min(16 * k, h * 0.2); return { d: `M${i},${i} H${R} V${cy - r} A${r},${r} 0 0 0 ${R},${cy + r} V${B} H${i} V${cy + r} A${r},${r} 0 0 0 ${i},${cy - r} Z` }; }
+      case 'bubble': { const r = Math.min(26 * k, cy - i); return { d: `M${i + r},${i} H${R - r} A${r},${r} 0 0 1 ${R},${i + r} V${B - r} A${r},${r} 0 0 1 ${R - r},${B} H${i + r + 84 * k} L${i + 30 * k},${B + 24 * k} L${i + r + 40 * k},${B} H${i + r} A${r},${r} 0 0 1 ${i},${B - r} V${i + r} A${r},${r} 0 0 1 ${i + r},${i} Z` }; }
       default: return { d: rounded(0) };
     }
   }
@@ -213,6 +214,26 @@
     card.prepend(plate);
   }
 
+  // Status links and badges wear their chapter's outline, at button scale.
+  function buildButton(btn) {
+    btn.classList.add('shaped');
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', 'btn-shape');
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('focusable', 'false');
+    s.innerHTML = '<path class="plate"/><path class="face"/><path class="fold"/>';
+    btn.prepend(s);
+  }
+
+  function drawButton(btn) {
+    const w = btn.offsetWidth, h = btn.offsetHeight;
+    if (!w || !h || !btn.dataset.btn) return;
+    const { d, fold } = shapePath(btn.dataset.btn, w, h, 0.28);
+    btn.querySelector('.btn-shape .plate').setAttribute('d', d);
+    btn.querySelector('.btn-shape .face').setAttribute('d', d);
+    btn.querySelector('.btn-shape .fold').setAttribute('d', fold || '');
+  }
+
   function drawShape(card) {
     const w = card.offsetWidth, h = card.offsetHeight;
     if (!w || !h) return;
@@ -224,15 +245,21 @@
     card.querySelector('.shape-face .fold').setAttribute('d', fold || '');
     const trace = card.querySelector('.shape-face .trace');
     trace.style.setProperty('--len', Math.ceil(trace.getTotalLength()) + 'px');
+    card.querySelectorAll('.status.shaped').forEach((btn) => {
+      if (btn.dataset.btn !== kind) { btn.dataset.btn = kind; drawButton(btn); }
+    });
   }
 
   // ─── Research panels ───
   function initResearch() {
     const grid = document.querySelector('.research-grid');
     if (!grid) return;
-    const sizer = new ResizeObserver((entries) => entries.forEach((e) => drawShape(e.target)));
+    const sizer = new ResizeObserver((entries) => entries.forEach((e) => {
+      if (e.target.classList.contains('research-item')) drawShape(e.target); else drawButton(e.target);
+    }));
     grid.querySelectorAll('.research-item').forEach((card, i) => {
       buildShape(card, i);
+      card.querySelectorAll('.status').forEach((btn) => { buildButton(btn); sizer.observe(btn); });
       sizer.observe(card);
 
       const h3 = card.querySelector('h3');
