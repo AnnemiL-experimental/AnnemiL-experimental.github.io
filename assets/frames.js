@@ -85,6 +85,12 @@
       }
       return 0;
     },
+    // slow oscillation: smooth up/down states, with fast activity riding the up states
+    slow(x) {
+      const t = x / 1000;
+      const s = Math.tanh(4 * Math.sin(t * 2 * Math.PI * 2.5 - 0.6));
+      return 8 * s + (s > 0.6 ? 2.2 * Math.sin(t * 2 * Math.PI * 70) : 0);
+    },
     // theta with nested gamma
     theta(x) {
       const t = x / 1000;
@@ -193,8 +199,10 @@
     }
   }
 
-  function buildShape(card, n) {
-    card.dataset.kind = SHAPES[n % SHAPES.length];
+  // `n` picks the outline (per grid); `uid` keeps pattern/mask ids unique page-wide.
+  function buildShape(card, n, uid = n) {
+    // A card may name its own outline (data-kind); otherwise it takes the next in turn.
+    if (!card.dataset.kind) card.dataset.kind = SHAPES[n % SHAPES.length];
     const svg = (cls) => {
       const s = document.createElementNS(NS, 'svg');
       s.setAttribute('class', cls);
@@ -206,10 +214,10 @@
     plate.innerHTML = '<path/>';
     const face = svg('shape-face');
     face.innerHTML =
-      `<defs><pattern id="dots-${n}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.7" style="fill: var(--print)"/></pattern>` +
-      `<linearGradient id="fade-${n}" x1="1" y1="0" x2="0.35" y2="0.85"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>` +
-      `<mask id="mask-${n}" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade-${n})"/></mask></defs>` +
-      `<path class="body"/><path class="dots" fill="url(#dots-${n})" mask="url(#mask-${n})"/><path class="fold"/><path class="trace"/>`;
+      `<defs><pattern id="dots-${uid}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.7" style="fill: var(--print)"/></pattern>` +
+      `<linearGradient id="fade-${uid}" x1="1" y1="0" x2="0.35" y2="0.85"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>` +
+      `<mask id="mask-${uid}" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fade-${uid})"/></mask></defs>` +
+      `<path class="body"/><path class="dots" fill="url(#dots-${uid})" mask="url(#mask-${uid})"/><path class="fold"/><path class="trace"/>`;
     card.prepend(face);
     card.prepend(plate);
   }
@@ -252,13 +260,22 @@
 
   // ─── Research panels ───
   function initResearch() {
-    const grid = document.querySelector('.research-grid');
-    if (!grid) return;
+    const grids = document.querySelectorAll('.research-grid');
+    if (!grids.length) return;
     const sizer = new ResizeObserver((entries) => entries.forEach((e) => {
-      if (e.target.classList.contains('research-item')) drawShape(e.target); else drawButton(e.target);
+      if (e.target.classList.contains('research-item')) { drawShape(e.target); fitRows(e.target); } else drawButton(e.target);
     }));
-    grid.querySelectorAll('.research-item').forEach((card, i) => {
-      buildShape(card, i);
+    // Masonry: each card spans as many 4px grid rows as its height plus margins
+    // and one gutter, so cards stack tightly in both columns (CSS uses --rows).
+    function fitRows(card) {
+      const g = getComputedStyle(card.parentElement), c = getComputedStyle(card);
+      const unit = parseFloat(g.gridAutoRows) || 4;
+      const total = card.offsetHeight + parseFloat(c.marginTop) + parseFloat(c.marginBottom) + parseFloat(g.columnGap);
+      card.style.setProperty('--rows', Math.ceil(total / unit));
+    }
+    let uid = 0;
+    grids.forEach((grid) => grid.querySelectorAll('.research-item').forEach((card, i) => {
+      buildShape(card, i, uid++);
       card.querySelectorAll('.status').forEach((btn) => { buildButton(btn); sizer.observe(btn); });
       sizer.observe(card);
 
@@ -273,10 +290,10 @@
       const blip = () => pulse(wrap, 'is-blip', FRAME * 3);
       card.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') blip(); });
       card.addEventListener('focusin', blip);
-    });
+    }));
 
     // PanelTransition: chosen chapter comes forward, others recede, then settle.
-    grid.addEventListener('click', (e) => {
+    grids.forEach((grid) => grid.addEventListener('click', (e) => {
       const link = e.target.closest('a');
       if (!link || reduced()) return;
       const card = link.closest('.research-item');
@@ -288,7 +305,7 @@
         grid.classList.remove('has-selection');
         card.classList.remove('is-selected');
       }, 700);
-    });
+    }));
   }
 
   // ─── Scroll storytelling ───

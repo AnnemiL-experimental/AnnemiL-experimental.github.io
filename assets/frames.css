@@ -743,13 +743,30 @@ section {
   transform: rotate(1.5deg);
 }
 :root[data-theme="ink"] .research-quote { border-color: var(--hot); box-shadow: 8px 8px 0 var(--cyan), var(--glow-hot); }
+/* Narration variant: the same box, carrying the chapter's own line rather than a quotation. */
+.research-quote.is-narration { padding-left: 2.2rem; }
+.research-quote.is-narration::before { content: none; }
+.research-quote.is-narration p {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(1.02rem, 1.7vw, 1.28rem); line-height: 1.65;
+  letter-spacing: 0.01em;
+}
 
-/* Asymmetric rhythm: 12 | 7·5 | 5·7 | 12 | 6·6 | 6·6 */
+/* Staggered (masonry) rhythm on wide screens: two equal columns, each card
+   at its natural height and tucked under the one above it; the right column
+   starts lower so the two never line up. frames.js sets --rows per card. */
+.research-grid { align-items: start; }
 .research-item { grid-column: span 6; }
-.research-item:nth-child(1), .research-item:nth-child(6) { grid-column: span 12; }
-.research-item:nth-child(2), .research-item:nth-child(5) { grid-column: span 7; }
-.research-item:nth-child(3), .research-item:nth-child(4) { grid-column: span 5; }
-.research-item:nth-child(n+7) { grid-column: span 6; }
+.research-item:only-child { grid-column: 1 / -1; }
+.research-item[data-kind="bubble"] { margin-bottom: 1.6rem; } /* room for the tail */
+@media (min-width: 961px) {
+  .research-grid { grid-auto-rows: 4px; row-gap: 0; grid-auto-flow: row dense; } /* dense: each column fills top-down on its own */
+  .research-item { grid-row-end: span var(--rows, 60); }
+  .research-item:nth-child(odd)  { grid-column: 1 / span 6; }  /* odd chapters left, even right: reads as a zigzag */
+  .research-item:nth-child(even) { grid-column: 7 / span 6; }
+  .research-item:only-child { grid-column: 1 / -1; }
+  .research-item:nth-child(2) { margin-top: 4.5rem; }
+}
 
 .research-item {
   --print: var(--hot);
@@ -1320,8 +1337,9 @@ section.is-arrived .section-title [data-chroma] > .chroma-layer.c { animation: s
     padding-top: 1.2rem; padding-left: calc(var(--cut) + 0.8rem);
   }
   .cover-signal { clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%); padding-bottom: 1.2rem; padding-right: calc(var(--cut) + 0.8rem); }
-  .research-item:nth-child(n) { grid-column: span 12; }
-  .research-item:nth-child(n+7) { grid-column: span 6; }
+  /* One column, offset left / right so the stack still zigzags. */
+  .research-item:nth-child(n) { grid-column: 1 / span 11; margin-top: 0; }
+  .research-item:nth-child(even) { grid-column: 2 / span 11; }
 }
 
 @media (max-width: 960px) {
@@ -1359,7 +1377,8 @@ section.is-arrived .section-title [data-chroma] > .chroma-layer.c { animation: s
 
   .research-quote { padding: 1.4rem 1.2rem 1.3rem 3.2rem; box-shadow: 6px 6px 0 var(--acid); }
   .research-quote::before { font-size: 4rem; left: 0.6rem; }
-  .research-item:nth-child(n) { grid-column: span 12; grid-template-columns: minmax(0, 1fr); gap: 0.8rem; padding: 1.3rem 1.2rem 1.4rem; }
+  .research-quote.is-narration { padding-left: 1.2rem; }
+  .research-item:nth-child(n) { grid-column: span 12; grid-template-columns: minmax(0, 1fr); gap: 0.8rem; padding: 1.3rem 1.2rem 1.4rem; margin-top: 0; }
   .research-item .r-tag { flex-direction: row; align-items: center; gap: 0.8rem; }
   .research-item:nth-child(n)[data-shape] { padding-inline: 2rem; }
   .research-item:nth-child(n)[data-shape="hexagon"] { padding: 1.6rem 3.4rem 1.6rem; }
