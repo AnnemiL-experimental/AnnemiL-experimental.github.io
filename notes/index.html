@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notes on love, existence, and inquiry | Annemi</title>
+<meta name="description" content="Working notes on love, ethics, the limits of formalization, and psychiatric neuroscience, drawn on the stars of Orion.">
+<link rel="canonical" href="https://annemi.studio/notes/">
+<meta property="og:title" content="Notes on love, existence, and inquiry">
+<meta property="og:description" content="Working notes on love, ethics, the limits of formalization, and psychiatric neuroscience, drawn on the stars of Orion.">
+<meta property="og:url" content="https://annemi.studio/notes/">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#1B2230">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231B2230'/%3E%3Ccircle cx='11' cy='17' r='1.8' fill='%23C98B8B'/%3E%3Ccircle cx='16' cy='15.5' r='1.8' fill='%23D8CC93'/%3E%3Ccircle cx='21' cy='14' r='1.8' fill='%23A3B48F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Palette: Pantone-based tones, desaturated, used in complementary pairs.
+     Two brights (Illuminating, Tangerine Tango) appear only at moments of emphasis. */
+  :root {
+    color-scheme: light;
+    --night: #1B2230;            /* muted slate night */
+    --starlight: #ECE8E1;        /* warm off-white against the cool night */
+    --mist: #9AA6B5;             /* secondary text on night */
+
+    --slateBlue: #5E7186;        /* Classic Blue, muted */
+    --dustyBlue: #8FAAC4;        /* Cerulean, muted */
+    --marsala: #955251;          /* Marsala */
+    --dustyRose: #C98B8B;        /* Marsala, lifted */
+    --mocha: #A47864;            /* Mocha Mousse */
+    --mochaDeep: #7A5646;        /* Mocha Mousse, deepened */
+    --apricot: #D2A586;          /* Peach Fuzz, muted */
+    --sandDollar: #DECDBE;       /* Sand Dollar */
+    --duskViolet: #6E6A8E;       /* Very Peri, muted */
+    --orchid: #B88FB0;           /* Radiant Orchid, muted */
+    --sage: #A3B48F;             /* Greenery, muted */
+    --steelTeal: #86ADB0;        /* Aqua Sky, muted */
+    --paleGold: #D8CC93;         /* Illuminating, muted */
+    --ultimateGray: #939597;     /* Ultimate Gray */
+
+    --illuminating: #F5DF4D;     /* bright: Illuminating */
+    --tangerine: #DD4124;        /* bright: Tangerine Tango */
+
+    /* Light-surface spreads (redefined in dark mode) */
+    --sandBg: var(--sandDollar); --sandFg: #2B2A33;
+    --blueBg: var(--dustyBlue);  --blueFg: #1B2230;
+    --sageBg: var(--sage);       --sageFg: #22281F;
+
+    --display: "Syne", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+    --sans: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--night);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --sandBg: #2E2A27; --sandFg: var(--sandDollar);
+      --blueBg: #1F2A36; --blueFg: var(--dustyBlue);
+      --sageBg: #252B22; --sageFg: var(--sage);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --sandBg: #2E2A27; --sandFg: var(--sandDollar);
+    --blueBg: #1F2A36; --blueFg: var(--dustyBlue);
+    --sageBg: #252B22; --sageFg: var(--sage);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; background: var(--night); color: var(--starlight);
+    font-family: var(--sans); font-size: 1.05rem; line-height: 1.62;
+  }
+  :focus-visible { outline: 2px solid var(--illuminating); outline-offset: 3px; }
+  a { color: inherit; }
+
+  /* ---------- Cover ---------- */
+  .cover { position: relative; padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 0; overflow: hidden; }
+  .masthead { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: 0.9rem; color: var(--mist); border-bottom: 1px solid rgba(154,166,181,.35); padding-bottom: 0.9rem; }
+  .masthead em { font-family: var(--display); font-size: 1.15rem; color: var(--starlight); }
+  .coverTitle {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(3rem, 10.5vw, 9.5rem); line-height: 0.88; letter-spacing: -0.035em;
+    margin: 2.2rem 0 1.5rem; max-width: 11ch;
+  }
+  .coverTitle .indent { display: block; padding-left: 1.2em; font-style: italic; }
+  .coverDeck { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+  .coverDeck p { grid-column: 7 / 13; margin: 0; font-size: 1.15rem; color: var(--mist); max-width: 46ch; }
+
+  /* ---------- Map ---------- */
+  .mapWrap { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 0; border-top: 1px solid rgba(154,166,181,.25); border-bottom: 1px solid rgba(154,166,181,.25); }
+  .mapStage { position: relative; height: min(78vh, 760px); min-height: 460px; overflow: hidden;
+    background: radial-gradient(ellipse 60% 55% at 38% 45%, rgba(110,106,142,.32), transparent 70%),
+                radial-gradient(ellipse 40% 40% at 78% 70%, rgba(94,113,134,.38), transparent 70%),
+                var(--night); }
+  #mapSvg { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  #mapSvg:active { cursor: grabbing; }
+  .mapTools { position: absolute; left: 1rem; bottom: 1rem; }
+  .pill { font-family: var(--sans); font-size: 0.85rem; font-weight: 500; background: transparent; color: inherit; border: 1px solid currentColor; border-radius: 999px; padding: 0.4rem 1rem; cursor: pointer; opacity: .85; }
+  .pill:hover { opacity: 1; }
+
+  .star { fill: #fff; }
+  @media (prefers-reduced-motion: no-preference) {
+    .star.twinkle { animation: twinkle 5s ease-in-out infinite; }
+    @keyframes twinkle { 50% { opacity: 0.15; } }
+  }
+  .figLine { stroke: rgba(154,166,181,.45); stroke-width: 1; transition: opacity .25s; }
+  .hasFocus .figLine { opacity: .2; }
+  .linkLine { stroke: var(--illuminating); stroke-width: 1.3; fill: none; opacity: 0; }
+  .linkLine.isOpen { stroke-dasharray: 2 5; }
+  .nebula { pointer-events: none; }
+  .linkLabel { font-family: var(--sans); font-size: 10.5px; font-style: italic; fill: var(--mist); pointer-events: none; opacity: 0; transition: opacity .25s; }
+  .nodeDot { cursor: pointer; }
+  .nodeDot.isOpen { fill: none !important; stroke-dasharray: 2 3; stroke-width: 1.4; }
+  .nodeText { font-family: var(--sans); font-size: 12px; fill: var(--starlight); pointer-events: none; paint-order: stroke; stroke: var(--night); stroke-width: 4px; stroke-linejoin: round; }
+  /* Names stay hidden until a star is hovered, focused, or lit by a selection */
+  .nodeText { opacity: 0; transition: opacity .2s; }
+  .nodeG:hover .nodeText, .nodeG:focus-visible .nodeText { opacity: 1; }
+  .hasFocus .nodeG.isLit .nodeText { opacity: 0.7; }
+  .hasFocus .nodeG.isSel .nodeText { opacity: 1; }
+  .nodeText.isCore { font-family: var(--display); font-size: 19px; font-style: italic; }
+  .hasFocus .nodeG:not(.isLit) { opacity: 0.14; }
+  .hasFocus .linkLine:not(.isLit) { opacity: 0; }
+  .hasFocus .linkLine.isLit { stroke: var(--illuminating); stroke-width: 1.4; opacity: .9; }
+  .hasFocus .linkLabel.isLit { opacity: 1; }
+  .nodeG, .linkLine { transition: opacity .25s; }
+
+  .detail { padding: 1.75rem 1.6rem; border-left: 1px solid rgba(154,166,181,.25); background: rgba(27,34,48,.6); }
+  .detail h2 { font-family: var(--display); font-weight: 400; font-size: 2.3rem; line-height: 1; letter-spacing: -0.02em; margin: 0 0 0.6rem; }
+  .groupTag { font-size: 0.85rem; color: var(--mist); margin: 0 0 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+  .swatch { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 8px currentColor; }
+  .detail .def { margin: 0 0 1.2rem; }
+  .detail h3 { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 1.15rem; margin: 1.2rem 0 0.4rem; color: var(--mist); }
+  .relList { list-style: none; margin: 0; padding: 0; font-size: 0.97rem; }
+  .relList li { padding: 0.25rem 0; }
+  .relList button { all: unset; cursor: pointer; border-bottom: 1px solid rgba(245,223,77,.45); }
+  .relList button:hover, .relList button:focus-visible { color: var(--illuminating); }
+  .relList .verb { color: var(--mist); font-style: italic; }
+  a.jump { font-weight: 500; color: var(--illuminating); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; padding: 1rem clamp(1.25rem, 4vw, 3.5rem) 2.5rem; font-size: 0.88rem; color: var(--mist); }
+  .legend button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; }
+  .legend button:hover { color: var(--starlight); }
+
+  /* ---------- Contents ---------- */
+  .contents { padding: 4rem clamp(1.25rem, 4vw, 3.5rem) 5rem; display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
+  .contents h2 { grid-column: 1 / 5; font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(2.5rem, 5vw, 4.2rem); margin: 0; line-height: 1; }
+  .contents ol { grid-column: 5 / 13; list-style: none; margin: 0; padding: 0; }
+  .contents li a { display: grid; grid-template-columns: 4.5rem 1fr auto; align-items: baseline; gap: 1rem; text-decoration: none; padding: 0.9rem 0; border-top: 1px solid rgba(154,166,181,.25); }
+  .contents li:last-child a { border-bottom: 1px solid rgba(154,166,181,.25); }
+  .contents .cNum { font-family: var(--display); font-size: 1.7rem; color: var(--swatchC); }
+  .contents .cTitle { font-family: var(--display); font-size: clamp(1.3rem, 2.4vw, 1.9rem); line-height: 1.15; }
+  .contents .cPage { font-size: 0.85rem; color: var(--mist); }
+  .contents li a:hover .cTitle { font-style: italic; }
+
+  /* ---------- Spreads ---------- */
+  .spread { background: var(--bg); color: var(--fg); padding: clamp(3.5rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3.5rem) 2rem; position: relative; overflow: hidden; }
+  .spread[data-tone="blue"]    { --bg: var(--slateBlue);  --fg: #F2EEE8;          --accent: var(--apricot);    --accent2: var(--sandDollar); }
+  .spread[data-tone="magenta"] { --bg: var(--marsala);    --fg: #F6ECE6;          --accent: var(--sage);       --accent2: var(--sandDollar); }
+  .spread[data-tone="night"]   { --bg: var(--night);      --fg: var(--starlight); --accent: var(--illuminating); --accent2: var(--dustyBlue); }
+  .spread[data-tone="peri"]    { --bg: var(--duskViolet); --fg: #FFFFFF;          --accent: var(--paleGold);   --accent2: var(--sage); }
+  .spread[data-tone="rose"]    { --bg: var(--sandBg);     --fg: var(--sandFg);    --accent: var(--slateBlue);  --accent2: var(--marsala); }
+  .spread[data-tone="serenity"]{ --bg: var(--blueBg);     --fg: var(--blueFg);    --accent: var(--mochaDeep);  --accent2: var(--tangerine); }
+  .spread[data-tone="violet"]  { --bg: var(--mochaDeep);  --fg: #F6EEE7;          --accent: var(--dustyBlue);  --accent2: var(--sandDollar); }
+  .spread[data-tone="ill"]     { --bg: var(--sageBg);     --fg: var(--sageFg);    --accent: var(--marsala);    --accent2: var(--slateBlue); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .spread[data-tone="rose"] { --accent: var(--dustyBlue); --accent2: var(--dustyRose); }
+    :root:not([data-theme="light"]) .spread[data-tone="serenity"] { --accent: var(--apricot); }
+    :root:not([data-theme="light"]) .spread[data-tone="ill"] { --accent: var(--dustyRose); }
+  }
+  :root[data-theme="dark"] .spread[data-tone="rose"] { --accent: var(--dustyBlue); --accent2: var(--dustyRose); }
+  :root[data-theme="dark"] .spread[data-tone="serenity"] { --accent: var(--apricot); }
+  :root[data-theme="dark"] .spread[data-tone="ill"] { --accent: var(--dustyRose); }
+
+  .spreadGrid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; max-width: 1320px; margin: 0 auto; }
+  .numeral { grid-column: 1 / 5; grid-row: 1 / 3; font-family: var(--display); font-weight: 400; font-size: clamp(7rem, 20vw, 17rem); line-height: 0.78; letter-spacing: -0.04em; color: var(--accent); margin: 0; align-self: start; }
+  .spreadHead { grid-column: 5 / 13; grid-row: 1; }
+  .spreadHead h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2.4rem, 5.4vw, 4.8rem); line-height: 0.95; letter-spacing: -0.03em; margin: 0 0 1.6rem; max-width: 14ch; }
+  .pull { grid-column: 5 / 13; grid-row: 2; font-family: var(--display); font-style: italic; font-size: clamp(1.45rem, 2.6vw, 2.2rem); line-height: 1.2; margin: 0 0 2.75rem; max-width: 30ch; }
+  .pull::before { content: "\201C"; color: var(--accent); }
+  .pull::after { content: "\201D"; color: var(--accent); }
+  .isMirror .numeral { grid-column: 9 / 13; text-align: right; }
+  .isMirror .spreadHead, .isMirror .pull { grid-column: 1 / 9; }
+
+  .body { grid-column: 5 / 13; }
+  .isMirror .body { grid-column: 1 / 9; }
+  .body.wide { grid-column: 1 / 13; }
+  .cols { columns: 2; column-gap: 2.5rem; }
+  .cols p { margin: 0 0 1rem; }
+  .cols h3 { break-after: avoid; }
+  .body > .cols > p:first-child::first-letter, .dropCap::first-letter {
+    font-family: var(--display); float: left; font-size: 4.4em; line-height: 0.78; padding: 0.06em 0.12em 0 0; color: var(--accent);
+  }
+  .body h3 { font-family: var(--display); font-weight: 400; font-style: italic; font-size: 1.6rem; line-height: 1.15; margin: 2.2rem 0 0.8rem; }
+  .cols h3:first-child { margin-top: 0; }
+  .personal { font-family: var(--display); font-style: italic; font-size: 1.35rem; line-height: 1.35; border-left: 2px solid var(--accent); padding-left: 1rem; }
+
+  figure { margin: 2.5rem 0; }
+  figure svg { width: 100%; height: auto; display: block; overflow: visible; }
+  figcaption { font-size: 0.85rem; opacity: .78; margin-top: 0.75rem; max-width: 60ch; }
+  .figScroll { overflow-x: auto; }
+  .figScroll svg { min-width: 540px; }
+  .dT { font-family: var(--sans); font-size: 14px; fill: var(--fg); }
+  .dS { font-family: var(--sans); font-size: 12px; fill: var(--fg); fill-opacity: .72; }
+  .dD { font-family: var(--display); font-style: italic; font-size: 22px; fill: var(--fg); }
+  .formula { font-family: var(--display); font-size: clamp(2rem, 5vw, 3.6rem); text-align: center; margin: 2rem 0 0.25rem; letter-spacing: 0.02em; }
+  .formulaKey { text-align: center; font-size: 0.85rem; opacity: .75; margin: 0 0 2rem; }
+
+  .folio { max-width: 1320px; margin: 3.5rem auto 0; display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8rem; opacity: .75; border-top: 1px solid currentColor; padding-top: 0.7rem; }
+  .folio .pg { font-family: var(--display); font-size: 1rem; }
+  .showInMap { margin: 1rem 0 0; }
+
+  /* Questions */
+  .qGrid { grid-column: 1 / 13; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 3rem; }
+  details { border-top: 1px solid currentColor; padding: 1rem 0; }
+  summary { font-family: var(--display); font-size: 1.6rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--accent); }
+  details[open] summary::after { content: "\2212"; }
+  details ul { margin: 0.8rem 0 0.25rem; padding-left: 1.1rem; }
+  details li { margin: 0 0 0.5rem; }
+
+  /* Propositions */
+  .props { grid-column: 1 / 13; list-style: none; padding: 0; margin: 0; counter-reset: prop; }
+  .props li { counter-increment: prop; display: grid; grid-template-columns: minmax(5rem, 2fr) 3fr 7fr; gap: 1.5rem; padding: 1.6rem 0; border-top: 1px solid currentColor; align-items: baseline; }
+  .props li::before { content: counter(prop, upper-roman); font-family: var(--display); font-size: 3rem; line-height: 1; }
+  .props strong { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 1.4rem; }
+  .props span { font-family: var(--display); font-size: clamp(1.3rem, 2.3vw, 1.9rem); line-height: 1.25; }
+
+  .colophon { padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 3rem; font-size: 0.85rem; color: var(--mist); display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; }
+  .colophon span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+  /* ---------- Tensor block ---------- */
+  .tensorBlock { margin: 0.5rem 0 2.5rem; }
+  .tControls { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center; margin: 1.75rem 0 1rem; }
+  .seg { display: inline-flex; border: 1px solid currentColor; border-radius: 999px; overflow: hidden; }
+  .seg button { all: unset; cursor: pointer; font-size: 0.85rem; padding: 0.4rem 1rem; }
+  .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  .seg button:focus-visible { outline: 2px solid var(--illuminating); outline-offset: -2px; }
+  .aSlider { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; }
+  .aSlider[hidden] { display: none; }
+  .aSlider input { accent-color: var(--paleGold); width: 120px; }
+  .aSlider output { font-family: var(--display); font-style: italic; font-size: 1.1rem; min-width: 6.5rem; }
+  .tStage { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  #tensorSvg { width: 100%; height: auto; display: block; }
+  #tensorSvg.isCube { touch-action: none; cursor: grab; }
+  #tensorSvg.isCube:active { cursor: grabbing; }
+  .tCell { cursor: pointer; }
+  .tRead { border-top: 1px solid currentColor; padding-top: 1rem; font-size: 0.95rem; }
+  .tRead h4 { font-family: var(--display); font-weight: 400; font-style: italic; font-size: 1.5rem; line-height: 1.1; margin: 0 0 0.7rem; }
+  .tRead p { margin: 0 0 0.8rem; }
+  .tRead dl { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.9rem; margin: 0 0 1rem; }
+  .tRead dt { opacity: 0.7; }
+  .tRead dd { margin: 0; font-family: var(--display); font-style: italic; font-size: 1.1rem; }
+  .tRead .note { border-left: 2px solid var(--illuminating); padding-left: 0.7rem; }
+  .tBar { height: 6px; background: rgba(236,232,225,.15); border-radius: 3px; margin: 0.3rem 0 1rem; }
+  .tBar span { display: block; height: 100%; border-radius: 3px; background: var(--paleGold); }
+  .tLegend { margin-top: 1.2rem; font-size: 0.8rem; opacity: 0.85; }
+  .tLegend .ramp { height: 8px; border-radius: 4px; background: linear-gradient(90deg, rgba(62,78,102,.25), #C98B8B, #D8CC93); margin: 0.3rem 0; }
+  .tLegend .ends { display: flex; justify-content: space-between; }
+  .tCaption { font-size: 0.85rem; opacity: 0.75; margin: 1rem 0 0; max-width: 70ch; }
+
+  @media (max-width: 900px) {
+    .tStage { grid-template-columns: 1fr; }
+    .mapWrap { grid-template-columns: 1fr; }
+    .detail { border-left: 0; border-top: 1px solid rgba(154,166,181,.25); }
+    .coverDeck p, .contents h2, .contents ol { grid-column: 1 / 13; }
+    .numeral, .isMirror .numeral { grid-column: 1 / 13; grid-row: auto; text-align: left; font-size: 7rem; margin-bottom: 1rem; }
+    .spreadHead, .pull, .body, .isMirror .spreadHead, .isMirror .pull, .isMirror .body { grid-column: 1 / 13; grid-row: auto; }
+    .cols { columns: 1; }
+    .qGrid { grid-template-columns: 1fr; }
+    .props li { grid-template-columns: 3.5rem 1fr; }
+    .props span { grid-column: 2; }
+  }
+  /* ---------- Type: Syne (wide geometric display) + Space Grotesk (text) ---------- */
+  /* Space Grotesk has no italic, so emphasis uses weight and tone instead of slant */
+  .relList .verb, .linkLabel, article em, .detail em { font-style: normal; }
+  article em, .detail em { font-weight: 500; }
+  body { font-size: 1.02rem; line-height: 1.68; font-weight: 400; }
+  .coverTitle { font-weight: 700; font-size: clamp(2.6rem, 7.6vw, 7rem); line-height: 0.95; letter-spacing: -0.03em; max-width: 13ch; }
+  .coverTitle .indent { font-style: normal; font-weight: 500; }
+  .masthead em { font-style: normal; font-weight: 700; letter-spacing: 0.01em; }
+  .numeral { font-weight: 800; font-size: clamp(6rem, 15vw, 13rem); letter-spacing: -0.05em; }
+  .spreadHead h2, .detail h2, .contents h2 { font-weight: 700; font-style: normal; letter-spacing: -0.02em; }
+  .spreadHead h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); line-height: 1; max-width: 16ch; }
+  .detail h2 { font-size: 2rem; }
+  .contents .cTitle { font-weight: 600; }
+  .contents .cNum { font-weight: 800; }
+  .contents li a:hover .cTitle { font-style: normal; color: var(--paleGold); }
+  .body h3, .detail h3, .tRead h4, summary, .props strong { font-style: normal; font-weight: 600; letter-spacing: -0.01em; }
+  .body h3 { font-size: 1.3rem; }
+  .pull, .personal { font-family: var(--sans); font-style: normal; font-weight: 300; letter-spacing: -0.01em; }
+  .pull { font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 1.3; }
+  .props span { font-family: var(--sans); font-weight: 300; }
+  .props li::before { font-weight: 800; }
+  .tRead dd, .aSlider output { font-family: var(--sans); font-style: normal; font-weight: 500; }
+  .dD { font-style: normal; font-weight: 600; }
+  .nodeText.isCore { font-style: normal; font-weight: 700; font-size: 15px; }
+  .formula { font-family: var(--sans); font-weight: 300; }
+  .body > .cols > p:first-child::first-letter, .dropCap::first-letter { font-weight: 800; }
+  /* ---------- Sidehead rows (chapter II) ---------- */
+  .subRow { grid-column: 1 / 13; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; padding: 2rem 0 1rem; border-top: 1px solid rgba(255,255,255,.28); }
+  .subRow h3 { grid-column: 1 / 5; margin: 0 0 1rem; font-family: var(--display); font-weight: 600; font-size: 1.6rem; line-height: 1.12; letter-spacing: -0.01em; max-width: 12ch; }
+  .subText { grid-column: 5 / 12; max-width: 62ch; }
+  .subText p { margin: 0 0 1rem; }
+  @media (max-width: 900px) {
+    .subRow h3, .subText { grid-column: 1 / 13; }
+  }
+  /* Link back to the homepage */
+  .homeLink { color: var(--mist); text-decoration: none; border-bottom: 1px solid transparent; }
+  .homeLink:hover, .homeLink:focus-visible { color: var(--starlight); border-bottom-color: currentColor; }
+</style>
+</head>
+<body>
+
+<!-- ===== Cover ===== -->
+<header class="cover">
+  <div class="masthead"><a class="homeLink" href="/#research">← annemi.studio</a><em>Working notes</em><span>Annemi, 2026</span></div>
+  <h1 class="coverTitle">Notes on love, <span class="indent">existence,</span> and inquiry</h1>
+  <div class="coverDeck">
+    <p>A map of the ideas, drawn on the stars of Orion. Select a star to read it; drag to rearrange the sky. The full notes follow, one spread per chapter.</p>
+  </div>
+</header>
+
+<div class="mapWrap" id="map">
+  <div class="mapStage">
+    <svg id="mapSvg" role="img" aria-label="Concept constellation of the notes"></svg>
+    <div class="mapTools"><button class="pill" id="resetBtn" type="button">Clear selection</button></div>
+  </div>
+  <aside class="detail" id="detail" aria-live="polite"></aside>
+</div>
+<div class="legend" id="legend"></div>
+
+<!-- ===== Contents ===== -->
+<nav class="contents" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#ontology"><span class="cNum" style="color:var(--dustyBlue)">I</span><span class="cTitle">Ontological distinctions</span><span class="cPage">p. 02</span></a></li>
+    <li><a href="#love"><span class="cNum" style="color:var(--dustyRose)">II</span><span class="cTitle">The philosophy of love</span><span class="cPage">p. 04</span></a></li>
+    <li><a href="#existence"><span class="cNum" style="color:var(--paleGold)">III</span><span class="cTitle">Human existence and formal structure</span><span class="cPage">p. 08</span></a></li>
+    <li><a href="#hope"><span class="cNum" style="color:var(--orchid)">IV</span><span class="cTitle">Hope, curiosity, and commitment</span><span class="cPage">p. 10</span></a></li>
+    <li><a href="#values"><span class="cNum" style="color:var(--sandDollar)">V</span><span class="cTitle">Ego, recognition, and intellectual values</span><span class="cPage">p. 12</span></a></li>
+    <li><a href="#psych"><span class="cNum" style="color:var(--steelTeal)">VI</span><span class="cTitle">Philosophy and psychiatric neuroscience</span><span class="cPage">p. 14</span></a></li>
+    <li><a href="#questions"><span class="cNum" style="color:var(--apricot)">VII</span><span class="cTitle">Questions for further development</span><span class="cPage">p. 16</span></a></li>
+    <li><a href="#propositions"><span class="cNum" style="color:var(--sage)">∴</span><span class="cTitle">Core propositions</span><span class="cPage">p. 18</span></a></li>
+  </ol>
+</nav>
+
+<!-- ===== I ===== -->
+<section class="spread" id="ontology" data-tone="blue">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">I</p>
+    <div class="spreadHead"><h2>Ontological distinctions</h2></div>
+    <p class="pull">Love, ethics, and aesthetics are three ontologically distinct phenomena.</p>
+    <div class="body">
+      <div class="cols">
+        <p>Each possesses its own nature, conditions, and mode of expression. Love concerns the will directed toward another's happiness. Ethics concerns the principles governing one's actions and decisions. Aesthetics concerns the perception, experience, and judgment of beauty and form.</p>
+        <p>These phenomena interact within human experience. Their relationships are dynamic and context-dependent. Their ontological independence allows love, ethical judgment, and aesthetic experience to coexist in different configurations.</p>
+      </div>
+    </div>
+    <div class="body wide">
+      <figure>
+        <svg viewBox="0 0 900 260" role="img" aria-label="Three separate orbs joined by dashed orbits of interaction">
+          <ellipse cx="450" cy="130" rx="330" ry="70" fill="none" stroke="var(--fg)" stroke-opacity=".35" stroke-dasharray="2 6"/>
+          <ellipse cx="450" cy="130" rx="230" ry="110" fill="none" stroke="var(--fg)" stroke-opacity=".2" stroke-dasharray="2 6" transform="rotate(-8 450 130)"/>
+          <circle cx="160" cy="130" r="58" fill="var(--marsala)"/>
+          <circle cx="450" cy="130" r="58" fill="var(--sage)"/>
+          <circle cx="740" cy="130" r="58" fill="var(--mocha)"/>
+          <text class="dD" x="160" y="137" text-anchor="middle" style="fill:#fff">Love</text>
+          <text class="dD" x="450" y="137" text-anchor="middle" style="fill:var(--night)">Ethics</text>
+          <text class="dD" x="740" y="137" text-anchor="middle" style="fill:#fff">Aesthetics</text>
+          <text class="dS" x="160" y="215" text-anchor="middle">the will toward another</text>
+          <text class="dS" x="450" y="215" text-anchor="middle">principles of action</text>
+          <text class="dS" x="740" y="215" text-anchor="middle">beauty and form</text>
+        </svg>
+        <figcaption>Three bodies with separate natures. The dashed orbits mark interaction, which varies with context.</figcaption>
+      </figure>
+      <button class="pill showInMap" data-nodes="love,ethics,aesthetics" type="button">Show in map</button>
+    </div>
+  </div>
+  <footer class="folio"><span class="pg">02</span><span>Ontological distinctions</span></footer>
+</section>
+
+<!-- ===== II ===== -->
+<section class="spread isMirror" id="love" data-tone="magenta">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">II</p>
+    <div class="spreadHead"><h2>The philosophy of love</h2></div>
+    <p class="pull">Love is the will to make the other happy, where happiness is defined by the other.</p>
+
+    <div class="subRow">
+      <h3>The nature of love</h3>
+      <div class="subText">
+        <p class="dropCap">The Other possesses an independent understanding of happiness, formed through their own experiences, preferences, and desires. Love directs the subject's will toward the realization of that happiness.</p>
+        <p>The definition holds three elements. The Other is the subject toward whom love is directed. Happiness is a state defined and experienced by the other. Will is the subject's enduring orientation toward the other's happiness.</p>
+        <p>Love is unconditional in its will. Its existence is independent of reciprocity, possession, and the fulfillment of desire.</p>
+      </div>
+    </div>
+
+    <div class="subRow">
+      <h3>Love and desire</h3>
+      <div class="subText">
+        <p>Desire seeks the satisfaction of the self. Love wills the happiness of the other. Both can coexist within the same subject, and their interaction depends on how self-directed satisfaction relates to the other's happiness.</p>
+        <p>When their directions conflict, love can motivate the restraint of desire. Restraint is a possible expression of love in the presence of conflicting desire. The subject may experience desire, act upon desire, and continue to possess love.</p>
+        <p>The concept of <em>objet petit a</em> offers a possible direction for investigating the structural relationship between desire and love. Its place within this framework remains an open theoretical question.</p>
+      </div>
+    </div>
+
+    <div class="body wide">
+      <figure class="figScroll">
+        <svg viewBox="0 0 900 240" role="img" aria-label="Desire orbits back to the self; love travels outward to the other">
+          <defs>
+            <marker id="arrD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--apricot)"/></marker>
+            <marker id="arrL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#fff"/></marker>
+          </defs>
+          <path d="M370 120 A120 58 0 1 1 330 77" fill="none" stroke="var(--apricot)" stroke-width="2.5" marker-end="url(#arrD)"/>
+          <circle cx="250" cy="120" r="42" fill="#fff"/>
+          <text class="dD" x="250" y="127" text-anchor="middle" style="fill:var(--marsala)">Self</text>
+          <circle cx="740" cy="120" r="42" fill="none" stroke="#fff" stroke-width="2.5"/>
+          <text class="dD" x="740" y="127" text-anchor="middle">Other</text>
+          <line x1="375" y1="120" x2="690" y2="120" stroke="#fff" stroke-width="2.5" marker-end="url(#arrL)"/>
+          <text class="dT" x="530" y="105" text-anchor="middle">love: the happiness of the other</text>
+          <text class="dT" x="250" y="222" text-anchor="middle" style="fill:var(--apricot)">desire: the satisfaction of the self</text>
+          <text class="dS" x="530" y="148" text-anchor="middle">where the two conflict, love can motivate restraint</text>
+        </svg>
+      </figure>
+    </div>
+
+    <div class="subRow">
+      <h3>Will and action</h3>
+      <div class="subText">
+        <p>Love's will is unbounded. Action has boundaries. The subject wishes to contribute actively to the other's happiness through actions desired by the other, and ethical principles determine the permissible scope of those actions.</p>
+        <p>The subject may act, refrain from acting, or refuse a particular request according to ethical judgment. Love remains an independent condition of the subject's will.</p>
+      </div>
+    </div>
+
+    <div class="body wide">
+      <figure class="figScroll">
+        <svg viewBox="0 0 900 300" style="overflow:hidden" role="img" aria-label="Love radiates an unbounded field of will; ethics draws the boundary in which action takes place">
+          <g fill="none" stroke="#fff" stroke-dasharray="2 6">
+            <circle cx="150" cy="160" r="72" stroke-opacity=".55"/>
+            <circle cx="150" cy="160" r="128" stroke-opacity=".32"/>
+            <circle cx="150" cy="160" r="190" stroke-opacity=".18"/>
+            <circle cx="150" cy="160" r="256" stroke-opacity=".1"/>
+          </g>
+          <circle cx="150" cy="160" r="38" fill="#fff"/>
+          <text class="dD" x="150" y="167" text-anchor="middle" style="fill:var(--marsala)">Love</text>
+          <text class="dS" x="16" y="24">Will radiates without bound</text>
+          <rect x="540" y="88" width="300" height="140" fill="var(--marsala)" stroke="var(--apricot)" stroke-width="2.5"/>
+          <text class="dD" x="690" y="156" text-anchor="middle">Action</text>
+          <text class="dS" x="690" y="182" text-anchor="middle">the situated expression of will</text>
+          <text class="dT" x="840" y="262" text-anchor="end" style="fill:var(--apricot)">Ethics: the boundary of action</text>
+        </svg>
+        <figcaption>Love → will toward the other's happiness. Ethics → boundaries of action. Action → the situated expression of will.</figcaption>
+      </figure>
+    </div>
+
+    <div class="subRow">
+      <h3>The independence of love</h3>
+      <div class="subText">
+        <p>The existence of love is determined by the orientation of the will. Its practical expression emerges through the interaction of desire, ethical judgment, the other's wishes, and circumstance. This allows the emotional, volitional, and behavioral aspects of relationships to be considered separately.</p>
+        <button class="pill showInMap" data-nodes="love,will,other,happiness,desire,restraint,objetA,ethics,action" type="button">Show in map</button>
+      </div>
+    </div>
+  </div>
+  <footer class="folio"><span>The philosophy of love</span><span class="pg">04</span></footer>
+</section>
+
+<!-- ===== III ===== -->
+<section class="spread" id="existence" data-tone="night">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">III</p>
+    <div class="spreadHead"><h2>Human existence and formal structure</h2></div>
+    <p class="pull">The existence of a person cannot be exhausted by any formal representation.</p>
+    <div class="body">
+      <div class="cols">
+        <p>A human being possesses a multidimensional and dynamically structured existence. Love, desire, ethics, aesthetics, cognition, emotion, and behavior interact, forming patterns that vary across individuals, contexts, and time.</p>
+        <p>A matrix or tensor provides a conceptual representation of this relational structure. The tensor-product notation below expresses a possible joint structural framework; a formal model would require definitions of the component spaces and their interactions.</p>
+      </div>
+    </div>
+    <div class="body wide tensorBlock" id="tensor">
+      <p class="formula" aria-label="S equals L tensor D tensor E tensor A">𝒮 = <span style="color:var(--dustyRose)">ℒ</span> ⊗ <span style="color:var(--apricot)">𝒟</span> ⊗ <span style="color:var(--sage)">ℰ</span> ⊗ <span style="color:var(--steelTeal)">𝒜</span></p>
+      <p class="formulaKey">Love, Desire, Ethics, Aesthetics. Three states per factor, 81 configurations.</p>
+      <div class="tControls">
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" data-view="cube" aria-pressed="true">Cube</button>
+          <button type="button" data-view="slices" aria-pressed="false">Slices</button>
+        </div>
+        <div class="seg" role="group" aria-label="Model">
+          <button type="button" data-model="separable" aria-pressed="true">Independent</button>
+          <button type="button" data-model="coupled" aria-pressed="false">With interactions</button>
+        </div>
+        <label class="aSlider" id="aSliderWrap">Aesthetics
+          <input type="range" min="0" max="2" step="1" value="1" id="aSlider">
+          <output id="aOut">perceived</output>
+        </label>
+      </div>
+      <div class="tStage">
+        <svg id="tensorSvg" class="isCube" viewBox="0 0 900 560" role="img" aria-label="Illustrative four-way tensor of love, desire, ethics, and aesthetics"></svg>
+        <aside class="tRead" id="tRead" aria-live="polite"></aside>
+      </div>
+      <p class="tCaption">Values are illustrative. A formal model would need defined component spaces and interactions; and by the notes' own account, any such picture holds at most the formalizable part of a person.</p>
+    </div>
+    <div class="body">
+      <div class="cols">
+        <h3>The limits of formalization</h3>
+        <p>Human existence is partially formalizable and fundamentally inexhaustible. The provisional 70/30 distinction expresses this philosophical intuition. The numerical proportions serve as conceptual approximations.</p>
+        <p>Seventy percent names the relational, behavioral, cognitive, and psychological patterns that may be represented through formal systems. Thirty percent names the dimension that remains beyond complete formal representation. This irreducibility forms part of what constitutes human existence.</p>
+      </div>
+    </div>
+    <div class="body wide">
+      <figure>
+        <svg viewBox="0 0 900 170" role="img" aria-label="A band split into seventy percent formalizable structure and thirty percent irreducible existence, which fades into stars">
+          <defs>
+            <linearGradient id="fadeOut" x1="0" x2="1">
+              <stop offset="0" stop-color="var(--illuminating)" stop-opacity=".55"/>
+              <stop offset="1" stop-color="var(--illuminating)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="30" width="630" height="70" fill="var(--illuminating)"/>
+          <rect x="630" y="30" width="270" height="70" fill="url(#fadeOut)"/>
+          <g fill="var(--illuminating)">
+            <circle cx="672" cy="44" r="1.6"/><circle cx="701" cy="88" r="1.2"/><circle cx="734" cy="57" r="1.8"/><circle cx="768" cy="92" r="1.1"/>
+            <circle cx="799" cy="41" r="1.4"/><circle cx="828" cy="70" r="1.9"/><circle cx="858" cy="49" r="1.1"/><circle cx="885" cy="86" r="1.5"/>
+          </g>
+          <text class="dD" x="20" y="74" style="fill:var(--night)">≈70% formalizable structure</text>
+          <text class="dD" x="890" y="74" text-anchor="end">≈30%</text>
+          <text class="dS" x="0" y="130">relational, behavioral, cognitive, psychological patterns</text>
+          <text class="dS" x="900" y="130" text-anchor="end">irreducible existence</text>
+          <text class="dS" x="900" y="148" text-anchor="end">beyond complete representation</text>
+        </svg>
+      </figure>
+      <button class="pill showInMap" data-nodes="human,tensor,formal,irreducible,love,desire,ethics,aesthetics" type="button">Show in map</button>
+    </div>
+  </div>
+  <footer class="folio"><span class="pg">08</span><span>Human existence and formal structure</span></footer>
+</section>
+
+<!-- ===== IV ===== -->
+<section class="spread isMirror" id="hope" data-tone="peri">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">IV</p>
+    <div class="spreadHead"><h2>Hope, curiosity, and commitment</h2></div>
+    <p class="pull">Curiosity can sustain inquiry independently of hope.</p>
+    <div class="body">
+      <div class="cols">
+        <p>Hope and curiosity are distinct phenomena. Hope concerns one's orientation toward future possibilities. Curiosity concerns one's orientation toward the unknown. A subject may possess curiosity without experiencing hope.</p>
+        <p class="personal">I have little expectation of the future, yet I remain curious about myself and the world.</p>
+        <p>Curiosity sustains inquiry through the presence of unanswered questions. Its objects include human experience, emotion, consciousness, relationships, and the mechanisms underlying psychiatric disorders.</p>
+        <h3>Commitment</h3>
+        <p>Commitment is the sustained allocation of attention and action toward what one considers important. It may arise from curiosity, responsibility, love, intellectual interest, or ethical judgment. The continuity of inquiry can exist independently of expectations about its eventual outcome.</p>
+      </div>
+    </div>
+    <div class="body wide">
+      <figure>
+        <svg viewBox="0 0 900 230" role="img" aria-label="From the subject, a faint line toward the future and a bright line toward the unknown">
+          <defs>
+            <marker id="arrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--illuminating)"/></marker>
+            <marker id="arrH" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff" fill-opacity=".5"/></marker>
+          </defs>
+          <circle cx="120" cy="115" r="40" fill="#fff"/>
+          <text class="dD" x="120" y="122" text-anchor="middle" style="fill:var(--duskViolet)">Subject</text>
+          <line x1="165" y1="100" x2="700" y2="35" stroke="#fff" stroke-opacity=".45" stroke-width="1.4" stroke-dasharray="2 7" marker-end="url(#arrH)"/>
+          <text class="dD" x="715" y="40" style="fill-opacity:.6">Hope</text>
+          <text class="dS" x="715" y="60">toward the future</text>
+          <line x1="165" y1="130" x2="700" y2="190" stroke="var(--illuminating)" stroke-width="3" marker-end="url(#arrC)"/>
+          <text class="dD" x="715" y="195" style="fill:var(--illuminating)">Curiosity</text>
+          <text class="dS" x="715" y="215">toward the unknown</text>
+        </svg>
+        <figcaption>Two independent orientations. One can be faint while the other burns bright.</figcaption>
+      </figure>
+      <button class="pill showInMap" data-nodes="hope,curiosity,commitment" type="button">Show in map</button>
+    </div>
+  </div>
+  <footer class="folio"><span>Hope, curiosity, and commitment</span><span class="pg">10</span></footer>
+</section>
+
+<!-- ===== V ===== -->
+<section class="spread" id="values" data-tone="rose">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">V</p>
+    <div class="spreadHead"><h2>Ego, recognition, and intellectual values</h2></div>
+    <p class="pull">Genuine care can constitute a powerful source of interpersonal attraction.</p>
+    <div class="body">
+      <div class="cols">
+        <h3>Internal and external valuation</h3>
+        <p>Title, reputation, wealth, and social status occupy a limited position within the individual's hierarchy of concerns. Intellectual independence, authenticity, curiosity, and genuine care carry greater personal significance.</p>
+        <p>Self-evaluation is shaped by internal standards of understanding, competence, and intellectual integrity. This internal orientation can coexist with substantial self-doubt.</p>
+        <h3>Care and attraction</h3>
+        <p>An individual's visible concern for people, ideas, and the consequences of their work may evoke interest and admiration. Such attraction may influence consequential choices, including academic direction and professional relationships.</p>
+        <p>It illustrates the role of subjective experience in shaping trajectories that later acquire concrete institutional and scientific significance.</p>
+      </div>
+      <button class="pill showInMap" data-nodes="care,attraction,internal,commitment,curiosity" type="button">Show in map</button>
+    </div>
+  </div>
+  <footer class="folio"><span class="pg">12</span><span>Ego, recognition, and intellectual values</span></footer>
+</section>
+
+<!-- ===== VI ===== -->
+<section class="spread isMirror" id="psych" data-tone="serenity">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">VI</p>
+    <div class="spreadHead"><h2>Philosophy and psychiatric neuroscience</h2></div>
+    <p class="pull">What should psychiatric treatment seek to restore? The capacity to experience the full range of human emotions.</p>
+    <div class="body">
+      <div class="cols">
+        <p>Depression can involve emotional numbness, dissociation, and diminished subjective experience. The restoration of emotional capacity offers a potential dimension of treatment outcome alongside symptom reduction and functional improvement, and motivates inquiry into the neural mechanisms underlying affective experience.</p>
+        <h3>Objective measurement and subjectivity</h3>
+        <p>EEG, stimulation-evoked potentials, source localization, and neural circuit analysis characterize observable aspects of brain activity. Subjective experience contributes a further dimension to understanding the person undergoing treatment.</p>
+        <p>The framework motivates a research approach attentive to both measurable neural mechanisms and individual subjective experience.</p>
+      </div>
+    </div>
+    <div class="body wide">
+      <figure class="figScroll">
+        <svg viewBox="0 0 900 260" role="img" aria-label="Neural measurement and subjective experience converge on the person in treatment">
+          <defs>
+            <marker id="arrP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--fg)"/></marker>
+          </defs>
+          <text class="dD" x="0" y="60">Neural measurement</text>
+          <text class="dS" x="0" y="84">EEG, evoked potentials, source localization, circuits</text>
+          <text class="dD" x="0" y="190">Subjective experience</text>
+          <text class="dS" x="0" y="214">the person's own account</text>
+          <path d="M330 70 C 480 70, 520 120, 590 128" fill="none" stroke="var(--fg)" stroke-width="1.8" marker-end="url(#arrP)"/>
+          <path d="M330 196 C 480 196, 520 145, 590 136" fill="none" stroke="var(--fg)" stroke-width="1.8" stroke-dasharray="5 5" marker-end="url(#arrP)"/>
+          <circle cx="710" cy="132" r="110" fill="var(--accent2)" fill-opacity=".9"/>
+          <circle cx="710" cy="132" r="130" fill="none" stroke="var(--fg)" stroke-opacity=".35" stroke-dasharray="2 6"/>
+          <text class="dD" x="710" y="128" text-anchor="middle" style="font-size:28px;fill:#1B2230">The person</text>
+          <text class="dS" x="710" y="152" text-anchor="middle" style="fill:#1B2230;fill-opacity:.85">in treatment</text>
+        </svg>
+      </figure>
+      <button class="pill showInMap" data-nodes="treatment,emotion,measurement,subjective,irreducible" type="button">Show in map</button>
+    </div>
+  </div>
+  <footer class="folio"><span>Philosophy and psychiatric neuroscience</span><span class="pg">14</span></footer>
+</section>
+
+<!-- ===== VII ===== -->
+<section class="spread" id="questions" data-tone="violet">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true">VII</p>
+    <div class="spreadHead"><h2>Questions for further development</h2></div>
+    <p class="pull">What forms of explanation suit a subject inexhaustible by formal representation?</p>
+    <div class="qGrid">
+      <details open>
+        <summary>The ontology of love</summary>
+        <ul>
+          <li>What distinguishes love's will from goodwill, compassion, and care?</li>
+          <li>How does <em>objet petit a</em> relate to the distinction between desire and love?</li>
+          <li>What constitutes the persistence of love across changing emotional states?</li>
+        </ul>
+      </details>
+      <details open>
+        <summary>The structure of human existence</summary>
+        <ul>
+          <li>How can multidimensional interactions between love, desire, ethics, and aesthetics be represented formally?</li>
+          <li>What establishes the principled limits of formalization?</li>
+          <li>What constitutes the irreducible dimension of human existence?</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Hope and action</summary>
+        <ul>
+          <li>What sustains curiosity in the absence of hope?</li>
+          <li>How does commitment emerge from selective concern?</li>
+          <li>What is the relationship between curiosity, volition, and the continuity of personal identity?</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Psychiatric neuroscience</summary>
+        <ul>
+          <li>How can treatment outcomes incorporate the restoration of emotional experience?</li>
+          <li>How should subjective accounts inform the interpretation of neurophysiological biomarkers?</li>
+          <li>What forms of explanation are appropriate for a subject whose existence is fundamentally inexhaustible by formal representation?</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+  <footer class="folio"><span class="pg">16</span><span>Questions for further development</span></footer>
+</section>
+
+<!-- ===== Propositions ===== -->
+<section class="spread" id="propositions" data-tone="ill">
+  <div class="spreadGrid">
+    <p class="numeral" aria-hidden="true" style="color:var(--fg)">∴</p>
+    <div class="spreadHead"><h2>Core propositions</h2></div>
+    <p class="pull" style="visibility:hidden" aria-hidden="true">.</p>
+    <ol class="props">
+      <li><strong>On love</strong><span>Love is the unconditional will to make the other happy, as happiness is defined by the other.</span></li>
+      <li><strong>On ethics</strong><span>Ethics governs the boundaries of action. Love's will remains unbounded.</span></li>
+      <li><strong>On human existence</strong><span>Human existence possesses formalizable relational structures and an irreducible dimension beyond complete formal representation.</span></li>
+      <li><strong>On curiosity</strong><span>Curiosity can sustain inquiry independently of hope.</span></li>
+      <li><strong>On intellectual life</strong><span>The pursuit of understanding is guided by curiosity, care, and sustained commitment to a limited set of fundamental questions.</span></li>
+    </ol>
+  </div>
+  <footer class="folio"><span>Core propositions</span><span class="pg">18</span></footer>
+</section>
+
+<footer class="colophon">
+  <span><a class="homeLink" href="/#research">← Back to annemi.studio</a></span>
+  <span>Colors drawn from Pantone Colors of the Year, mostly desaturated:</span>
+  <span><i class="swatch" style="background:#5E7186;color:#5E7186"></i>Classic Blue, muted</span>
+  <span><i class="swatch" style="background:#955251;color:#955251"></i>Marsala</span>
+  <span><i class="swatch" style="background:#A47864;color:#A47864"></i>Mocha Mousse</span>
+  <span><i class="swatch" style="background:#DECDBE;color:#DECDBE"></i>Sand Dollar</span>
+  <span><i class="swatch" style="background:#6E6A8E;color:#6E6A8E"></i>Very Peri, muted</span>
+  <span><i class="swatch" style="background:#A3B48F;color:#A3B48F"></i>Greenery, muted</span>
+  <span><i class="swatch" style="background:#8FAAC4;color:#8FAAC4"></i>Cerulean, muted</span>
+  <span><i class="swatch" style="background:#939597;color:#939597"></i>Ultimate Gray</span>
+  <span><i class="swatch" style="background:#F5DF4D;color:#F5DF4D"></i>Illuminating</span>
+  <span><i class="swatch" style="background:#DD4124;color:#DD4124"></i>Tangerine Tango</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+// ---------- Data ----------
+// Concept groups, each mapped to a Pantone token
+const groupInfo = {
+  love:       { name: "Love",                     color: "--dustyRose" },
+  desire:     { name: "Desire",                   color: "--apricot" },
+  ethics:     { name: "Ethics and action",        color: "--sage" },
+  aesthetics: { name: "Aesthetics",               color: "--steelTeal" },
+  existence:  { name: "Human existence",          color: "--paleGold" },
+  inquiry:    { name: "Inquiry, care, values",    color: "--dustyBlue" },
+  psych:      { name: "Psychiatric neuroscience", color: "--orchid" },
+  open:       { name: "Open question",            color: "--ultimateGray" }
+};
+
+// Nodes: id, label, group, section anchor, definition, isCore (brighter star)
+const nodeList = [
+  { id: "love", label: "Love", group: "love", sec: "love", isCore: true,
+    def: "The will to make the other happy, where happiness is defined by the other. Unconditional in its will; independent of reciprocity, possession, and the fulfillment of desire." },
+  { id: "will", label: "Will", group: "love", sec: "love",
+    def: "The subject's enduring orientation toward the other's happiness. Love's will is unbounded." },
+  { id: "other", label: "The Other", group: "love", sec: "love",
+    def: "The subject toward whom love is directed. Holds an independent understanding of happiness, formed through their own experiences, preferences, and desires." },
+  { id: "happiness", label: "Happiness", group: "love", sec: "love",
+    def: "A state defined and experienced by the other." },
+  { id: "desire", label: "Desire", group: "desire", sec: "love", isCore: true,
+    def: "Seeks the satisfaction of the self. Can coexist with love within the same subject; their interaction depends on how self-directed satisfaction relates to the other's happiness." },
+  { id: "restraint", label: "Restraint", group: "desire", sec: "love",
+    def: "A possible expression of love in the presence of conflicting desire." },
+  { id: "objetA", label: "objet petit a", group: "open", sec: "love", isOpen: true,
+    def: "A possible direction for investigating the structural relationship between desire and love. Its place within the framework remains an open theoretical question." },
+  { id: "ethics", label: "Ethics", group: "ethics", sec: "ontology", isCore: true,
+    def: "The principles governing one's actions and decisions. Determines the permissible scope of action." },
+  { id: "action", label: "Action", group: "ethics", sec: "love",
+    def: "The situated expression of will. Action has boundaries: the subject may act, refrain, or refuse according to ethical judgment." },
+  { id: "aesthetics", label: "Aesthetics", group: "aesthetics", sec: "ontology", isCore: true,
+    def: "The perception, experience, and judgment of beauty and form." },
+  { id: "human", label: "Human existence", group: "existence", sec: "existence", isCore: true,
+    def: "A multidimensional, dynamically structured existence in which love, desire, ethics, aesthetics, cognition, emotion, and behavior interact." },
+  { id: "tensor", label: "𝒮 = ℒ⊗𝒟⊗ℰ⊗𝒜", group: "existence", sec: "existence",
+    def: "A preliminary mathematical analogy for the joint relational structure. A formal model would require definitions of the component spaces and their interactions." },
+  { id: "formal", label: "Formalizable (≈70%)", group: "existence", sec: "existence",
+    def: "The relational, behavioral, cognitive, and psychological patterns of human existence that may be represented through formal systems." },
+  { id: "irreducible", label: "Irreducible (≈30%)", group: "existence", sec: "existence",
+    def: "The dimension of human existence that remains beyond complete formal representation. This irreducibility forms part of what constitutes human existence." },
+  { id: "hope", label: "Hope", group: "inquiry", sec: "hope",
+    def: "Orientation toward future possibilities." },
+  { id: "curiosity", label: "Curiosity", group: "inquiry", sec: "hope", isCore: true,
+    def: "Orientation toward the unknown. Sustains inquiry through the presence of unanswered questions, and can persist without hope." },
+  { id: "commitment", label: "Commitment", group: "inquiry", sec: "hope",
+    def: "The sustained allocation of attention and action toward what one considers important. Can exist independently of expectations about outcome." },
+  { id: "internal", label: "Internal standards", group: "inquiry", sec: "values",
+    def: "Self-evaluation shaped by understanding, competence, and intellectual integrity, weighted above title, reputation, wealth, and status. Can coexist with substantial self-doubt." },
+  { id: "care", label: "Care", group: "inquiry", sec: "values",
+    def: "Visible concern for people, ideas, and the consequences of one's work." },
+  { id: "attraction", label: "Attraction", group: "inquiry", sec: "values",
+    def: "Interest and admiration evoked by genuine care. May influence consequential choices, including academic direction and professional relationships." },
+  { id: "treatment", label: "Psychiatric treatment", group: "psych", sec: "psych", isCore: true,
+    def: "What should it seek to restore? One proposed answer: the capacity to experience the full range of human emotions." },
+  { id: "emotion", label: "Emotional capacity", group: "psych", sec: "psych",
+    def: "A potential dimension of treatment outcome alongside symptom reduction and functional improvement. Depression can involve numbness, dissociation, and diminished subjective experience." },
+  { id: "measurement", label: "Neural measurement", group: "psych", sec: "psych",
+    def: "EEG, stimulation-evoked potentials, source localization, and neural circuit analysis characterize observable aspects of brain activity." },
+  { id: "subjective", label: "Subjective experience", group: "psych", sec: "psych",
+    def: "A further dimension for understanding the person undergoing treatment, alongside measurable neural mechanisms." }
+];
+
+// Links read as "source verb target"
+const linkList = [
+  { source: "love", target: "will", verb: "directs" },
+  { source: "will", target: "other", verb: "is oriented toward" },
+  { source: "other", target: "happiness", verb: "defines" },
+  { source: "will", target: "happiness", verb: "aims at" },
+  { source: "desire", target: "love", verb: "coexists, may conflict with" },
+  { source: "love", target: "restraint", verb: "can motivate" },
+  { source: "restraint", target: "desire", verb: "restrains" },
+  { source: "objetA", target: "desire", verb: "may structure", isOpen: true },
+  { source: "objetA", target: "love", verb: "may structure", isOpen: true },
+  { source: "ethics", target: "action", verb: "sets the boundaries of" },
+  { source: "will", target: "action", verb: "is expressed through" },
+  { source: "love", target: "ethics", verb: "is distinct from", isOpen: true },
+  { source: "love", target: "aesthetics", verb: "is distinct from", isOpen: true },
+  { source: "ethics", target: "aesthetics", verb: "is distinct from", isOpen: true },
+  { source: "human", target: "tensor", verb: "is modeled by" },
+  { source: "tensor", target: "love", verb: "includes" },
+  { source: "tensor", target: "desire", verb: "includes" },
+  { source: "tensor", target: "ethics", verb: "includes" },
+  { source: "tensor", target: "aesthetics", verb: "includes" },
+  { source: "human", target: "formal", verb: "is partly" },
+  { source: "human", target: "irreducible", verb: "is partly" },
+  { source: "curiosity", target: "hope", verb: "persists without" },
+  { source: "curiosity", target: "commitment", verb: "can give rise to" },
+  { source: "love", target: "commitment", verb: "can give rise to" },
+  { source: "ethics", target: "commitment", verb: "can give rise to" },
+  { source: "care", target: "commitment", verb: "can give rise to" },
+  { source: "care", target: "attraction", verb: "evokes" },
+  { source: "internal", target: "curiosity", verb: "values" },
+  { source: "internal", target: "care", verb: "values" },
+  { source: "curiosity", target: "treatment", verb: "drives inquiry into" },
+  { source: "treatment", target: "emotion", verb: "aims to restore" },
+  { source: "measurement", target: "treatment", verb: "informs" },
+  { source: "subjective", target: "treatment", verb: "informs" },
+  { source: "irreducible", target: "subjective", verb: "grounds" },
+  { source: "emotion", target: "human", verb: "is a dimension of" }
+];
+
+// ---------- Helpers ----------
+const nodeById = new Map(nodeList.map(n => [n.id, n]));
+const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const colorOf = n => cssVar(groupInfo[n.group].color);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const neighbors = new Map(nodeList.map(n => [n.id, new Set([n.id])]));
+linkList.forEach(l => { neighbors.get(l.source).add(l.target); neighbors.get(l.target).add(l.source); });
+
+// Seeded random so the starfield is stable between visits
+function makeRandom(seed) {
+  return () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+}
+
+// ---------- Map ----------
+const svg = d3.select("#mapSvg");
+const stage = document.querySelector(".mapStage");
+let width = stage.clientWidth, height = stage.clientHeight;
+svg.attr("viewBox", [0, 0, width, height]);
+
+// Glow filter for stars
+const defs = svg.append("defs");
+const glow = defs.append("filter").attr("id", "glow").attr("x", "-200%").attr("y", "-200%").attr("width", "500%").attr("height", "500%");
+glow.append("feGaussianBlur").attr("stdDeviation", 4).attr("result", "blur");
+const merge = glow.append("feMerge");
+merge.append("feMergeNode").attr("in", "blur");
+merge.append("feMergeNode").attr("in", "SourceGraphic");
+
+// Background starfield
+const starG = svg.append("g").attr("aria-hidden", "true");
+function drawStars() {
+  const rand = makeRandom(42);
+  const count = Math.round((width * height) / 4200);
+  const stars = d3.range(count).map(() => ({ x: rand() * width, y: rand() * height, r: rand() * 1.1 + 0.2, o: rand() * 0.6 + 0.15, t: rand() < 0.12, delay: rand() * 5 }));
+  starG.selectAll("circle").data(stars).join("circle")
+    .attr("class", d => "star" + (d.t ? " twinkle" : ""))
+    .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", d => d.r)
+    .attr("opacity", d => d.o).style("animation-delay", d => d.delay + "s");
+}
+drawStars();
+
+// Orion: each concept sits on a star (RA/Dec in degrees, visual magnitude).
+// Head and sword stars are spread slightly so their labels stay legible.
+const orionStars = {
+  aesthetics:  { star: "Mintaka",       ra: 83.00, dec: -0.30, mag: 2.2 },
+  love:        { star: "Alnilam",       ra: 84.05, dec: -1.20, mag: 1.7 },
+  ethics:      { star: "Alnitak",       ra: 85.19, dec: -1.94, mag: 1.8 },
+  desire:      { star: "Betelgeuse",    ra: 88.79, dec: 7.41,  mag: 0.5 },
+  will:        { star: "Bellatrix",     ra: 81.28, dec: 6.35,  mag: 1.6 },
+  human:       { star: "Meissa",        ra: 83.78, dec: 10.90, mag: 3.4 },
+  formal:      { star: "Phi¹ Orionis",  ra: 82.60, dec: 8.90,  mag: 4.4 },
+  irreducible: { star: "Phi² Orionis",  ra: 85.00, dec: 8.80,  mag: 4.1 },
+  curiosity:   { star: "Rigel",         ra: 78.63, dec: -8.20, mag: 0.1 },
+  commitment:  { star: "Saiph",         ra: 86.94, dec: -9.67, mag: 2.1 },
+  emotion:     { star: "42 Orionis",    ra: 83.85, dec: -4.20, mag: 4.6 },
+  treatment:   { star: "the Orion Nebula", ra: 83.82, dec: -5.50, mag: 4.0 },
+  measurement: { star: "Hatysa",        ra: 83.86, dec: -6.80, mag: 2.8 },
+  objetA:      { star: "Pi¹ Orionis",   ra: 74.64, dec: 10.15, mag: 4.6 },
+  happiness:   { star: "Pi² Orionis",   ra: 72.65, dec: 8.90,  mag: 4.4 },
+  other:       { star: "Tabit",         ra: 72.46, dec: 6.96,  mag: 3.2 },
+  action:      { star: "Pi⁴ Orionis",   ra: 72.80, dec: 5.61,  mag: 3.7 },
+  restraint:   { star: "Pi⁵ Orionis",   ra: 73.56, dec: 2.44,  mag: 3.7 },
+  tensor:      { star: "Pi⁶ Orionis",   ra: 74.64, dec: 1.71,  mag: 4.5 },
+  hope:        { star: "Mu Orionis",    ra: 90.60, dec: 9.65,  mag: 4.1 },
+  internal:    { star: "Xi Orionis",    ra: 92.99, dec: 14.21, mag: 4.5 },
+  care:        { star: "Nu Orionis",    ra: 91.89, dec: 14.77, mag: 4.4 },
+  attraction:  { star: "Chi² Orionis",  ra: 90.98, dec: 20.14, mag: 4.6 },
+  subjective:  { star: "Chi¹ Orionis",  ra: 88.60, dec: 20.28, mag: 4.4 }
+};
+
+// Stick figure of Orion: head, shoulders, belt, legs, sword, shield, club
+const figureLines = [
+  ["desire", "human"], ["human", "will"], ["human", "formal"], ["human", "irreducible"],
+  ["desire", "ethics"], ["will", "aesthetics"],
+  ["ethics", "love"], ["love", "aesthetics"],
+  ["ethics", "commitment"], ["aesthetics", "curiosity"],
+  ["love", "emotion"], ["emotion", "treatment"], ["treatment", "measurement"],
+  ["will", "other"], ["objetA", "happiness"], ["happiness", "other"], ["other", "action"], ["action", "restraint"], ["restraint", "tensor"],
+  ["desire", "hope"], ["hope", "internal"], ["internal", "care"], ["care", "attraction"], ["attraction", "subjective"]
+];
+
+const rootG = svg.append("g");
+const nebulaG = rootG.append("g").attr("class", "nebula");
+const figG = rootG.append("g");
+const linkG = rootG.append("g");
+const labelG = rootG.append("g");
+const nodeG = rootG.append("g");
+
+const simNodes = nodeList.map(n => ({ ...n, mag: orionStars[n.id].mag }));
+const simById = new Map(simNodes.map(n => [n.id, n]));
+const simLinks = linkList.map(l => ({ ...l, source: simById.get(l.source), target: simById.get(l.target) }));
+const starRadius = d => Math.max(2.4, 9 - d.mag * 1.45);
+
+const linkSel = linkG.selectAll("path").data(simLinks).join("path")
+  .attr("class", d => "linkLine" + (d.isOpen ? " isOpen" : ""));
+
+// Orion Nebula glow around the sword's middle star
+const nebGrad = defs.append("radialGradient").attr("id", "nebulaGlow");
+nebGrad.append("stop").attr("offset", 0).attr("stop-color", "#C98B8B").attr("stop-opacity", 0.55);
+nebGrad.append("stop").attr("offset", 0.45).attr("stop-color", "#955251").attr("stop-opacity", 0.22);
+nebGrad.append("stop").attr("offset", 1).attr("stop-color", "#6E6A8E").attr("stop-opacity", 0);
+const nebulaSel = nebulaG.append("circle").attr("fill", "url(#nebulaGlow)");
+
+const figSel = figG.selectAll("line")
+  .data(figureLines.map(([a, b]) => ({ a: simById.get(a), b: simById.get(b) })))
+  .join("line").attr("class", "figLine");
+const linkLabelSel = labelG.selectAll("text").data(simLinks).join("text")
+  .attr("class", "linkLabel").attr("text-anchor", "middle").text(d => d.verb);
+
+const nodeSel = nodeG.selectAll("g").data(simNodes).join("g")
+  .attr("class", "nodeG").attr("tabindex", 0).attr("role", "button").attr("aria-label", d => d.label)
+  .on("click", (event, d) => { event.stopPropagation(); selectNode(d.id); })
+  .on("keydown", (event, d) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectNode(d.id); } });
+
+// Halo ring for the brightest stars
+nodeSel.filter(d => d.mag < 2).append("circle")
+  .attr("r", d => starRadius(d) + 9).attr("fill", "none").attr("stroke-opacity", 0.3)
+  .attr("stroke", d => colorOf(d)).attr("class", "halo");
+
+nodeSel.append("circle")
+  .attr("class", d => "nodeDot" + (d.isOpen ? " isOpen" : ""))
+  .attr("r", d => starRadius(d))
+  .attr("fill", d => colorOf(d))
+  .attr("stroke", d => d.isOpen ? colorOf(d) : null)
+  .attr("filter", d => d.isOpen ? null : "url(#glow)");
+
+// Larger invisible hit area for touch
+nodeSel.append("circle").attr("r", 18).attr("fill", "transparent");
+
+nodeSel.append("text")
+  .attr("class", d => "nodeText" + (d.isCore ? " isCore" : ""))
+  .attr("x", d => starRadius(d) + (d.mag < 2 ? 14 : 7)).attr("dy", "0.35em").text(d => d.label);
+
+// Project RA/Dec onto the stage, east on the left as seen in the sky
+let skyScale = 1;
+function layoutOrion() {
+  const cosD = Math.cos(5 * Math.PI / 180);
+  const raw = simNodes.map(d => ({ d, x: -orionStars[d.id].ra * cosD, y: -orionStars[d.id].dec }));
+  const [x0, x1] = d3.extent(raw, p => p.x);
+  const [y0, y1] = d3.extent(raw, p => p.y);
+  const padL = 36, padR = width < 600 ? 110 : 170, padT = 36, padB = 72;
+  const scale = Math.min((width - padL - padR) / (x1 - x0), (height - padT - padB) / (y1 - y0));
+  const offX = padL + ((width - padL - padR) - (x1 - x0) * scale) / 2;
+  const offY = padT + ((height - padT - padB) - (y1 - y0) * scale) / 2;
+  raw.forEach(p => { p.d.x = offX + (p.x - x0) * scale; p.d.y = offY + (p.y - y0) * scale; });
+  skyScale = scale;
+}
+
+// Concept links curve, so they read differently from Orion's straight figure lines
+function arcPath(d) {
+  const mx = (d.source.x + d.target.x) / 2, my = (d.source.y + d.target.y) / 2;
+  const dx = d.target.x - d.source.x, dy = d.target.y - d.source.y;
+  const cx = mx - dy * 0.18, cy = my + dx * 0.18;
+  d.labelX = (mx + cx) / 2; d.labelY = (my + cy) / 2; // curve midpoint at t = 0.5
+  return `M${d.source.x},${d.source.y} Q${cx},${cy} ${d.target.x},${d.target.y}`;
+}
+
+function redraw() {
+  figSel.attr("x1", d => d.a.x).attr("y1", d => d.a.y).attr("x2", d => d.b.x).attr("y2", d => d.b.y);
+  linkSel.attr("d", arcPath);
+  linkLabelSel.attr("x", d => d.labelX).attr("y", d => d.labelY - 4);
+  nodeSel.attr("transform", d => `translate(${d.x},${d.y})`);
+  const neb = simById.get("treatment");
+  nebulaSel.attr("cx", neb.x).attr("cy", neb.y).attr("r", Math.max(30, skyScale * 1.7));
+}
+layoutOrion();
+redraw();
+
+// Stars can still be nudged by hand
+nodeSel.call(d3.drag().on("drag", (event, d) => { d.x = event.x; d.y = event.y; redraw(); }));
+
+svg.on("click", () => clearFocus());
+
+// ---------- Selection & detail ----------
+const detailEl = document.getElementById("detail");
+
+function bindGo(root) {
+  root.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => selectNode(b.dataset.go)));
+}
+
+function highlight(idSet, linkFilter) {
+  svg.classed("hasFocus", true);
+  nodeSel.classed("isLit", d => idSet.has(d.id)).classed("isSel", false);
+  linkSel.classed("isLit", linkFilter);
+  linkLabelSel.classed("isLit", linkFilter);
+}
+
+function selectNode(id) {
+  highlight(neighbors.get(id), l => l.source.id === id || l.target.id === id);
+  nodeSel.classed("isSel", d => d.id === id);
+  renderDetail(nodeById.get(id));
+}
+
+function renderDetail(n) {
+  const g = groupInfo[n.group];
+  const rels = linkList.filter(l => l.source === n.id || l.target === n.id).map(l => {
+    const isOut = l.source === n.id;
+    const otherId = isOut ? l.target : l.source;
+    const other = nodeById.get(otherId);
+    return isOut
+      ? `<li><span class="verb">${l.verb}</span> <button data-go="${otherId}">${other.label}</button></li>`
+      : `<li><button data-go="${otherId}">${other.label}</button> <span class="verb">${l.verb}</span> this</li>`;
+  }).join("");
+  detailEl.innerHTML = `
+    <h2>${n.label}</h2>
+    <p class="groupTag"><span class="swatch" style="background:var(${g.color});color:var(${g.color})"></span>${g.name}, at ${orionStars[n.id].star}</p>
+    <p class="def">${n.def}</p>
+    <h3>Connections</h3>
+    <ul class="relList">${rels}</ul>
+    <p style="margin-top:1.4rem"><a class="jump" href="#${n.sec}">Read in the notes</a></p>`;
+  bindGo(detailEl);
+}
+
+function renderIntro() {
+  detailEl.innerHTML = `
+    <h2>Orion</h2>
+    <p class="def">Each concept sits on a star of Orion. The belt holds the three distinct phenomena: love at Alnilam, ethics at Alnitak, aesthetics at Mintaka. Desire burns at Betelgeuse, curiosity at Rigel, and psychiatric treatment glows in the Orion Nebula on the sword. Names appear when you hover or select a star; selecting one also lights the stars it connects to.</p>
+    <h3>Begin with</h3>
+    <ul class="relList">
+      <li><button data-go="love">Love</button></li>
+      <li><button data-go="human">Human existence</button></li>
+      <li><button data-go="curiosity">Curiosity</button></li>
+      <li><button data-go="treatment">Psychiatric treatment</button></li>
+    </ul>`;
+  bindGo(detailEl);
+}
+
+function clearFocus() {
+  svg.classed("hasFocus", false);
+  nodeSel.classed("isLit", false).classed("isSel", false);
+  linkSel.classed("isLit", false);
+  linkLabelSel.classed("isLit", false);
+  renderIntro();
+}
+document.getElementById("resetBtn").addEventListener("click", clearFocus);
+renderIntro();
+
+// Legend: highlight a whole group
+const legendEl = document.getElementById("legend");
+Object.entries(groupInfo).forEach(([key, g]) => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.innerHTML = `<span class="swatch" style="background:var(${g.color});color:var(${g.color})"></span>${g.name}`;
+  b.addEventListener("click", () => {
+    const ids = new Set(nodeList.filter(n => n.group === key).map(n => n.id));
+    highlight(ids, l => ids.has(l.source.id) && ids.has(l.target.id));
+  });
+  legendEl.appendChild(b);
+});
+
+// "Show in map" buttons in each spread
+document.querySelectorAll(".showInMap").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const ids = new Set(btn.dataset.nodes.split(","));
+    highlight(ids, l => ids.has(l.source.id) && ids.has(l.target.id));
+    const title = btn.closest("section").querySelector("h2").textContent;
+    detailEl.innerHTML = `<h2>${title}</h2>
+      <p class="def">Stars from this chapter are lit. Select any of them for details.</p>
+      <ul class="relList">${[...ids].map(id => `<li><button data-go="${id}">${nodeById.get(id).label}</button></li>`).join("")}</ul>`;
+    bindGo(detailEl);
+    document.getElementById("map").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  });
+});
+
+// Keep the sky sized to its container
+window.addEventListener("resize", () => {
+  width = stage.clientWidth; height = stage.clientHeight;
+  svg.attr("viewBox", [0, 0, width, height]);
+  drawStars();
+  layoutOrion();
+  redraw();
+});
+</script>
+<script>
+// ---------- Tensor visualization (chapter III) ----------
+(() => {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const factorNames = { L: "Love", D: "Desire", E: "Ethics", A: "Aesthetics" };
+  const states = {
+    L: ["absent", "latent", "enacted"],
+    D: ["none", "aligned", "conflicting"],
+    E: ["permits", "constrains", "forbids"],
+    A: ["unattended", "perceived", "absorbed"]
+  };
+
+  // Illustrative factor weights for the independent (rank-1, separable) model
+  const weights = { L: [0.3, 0.7, 1.0], D: [0.4, 1.0, 0.6], E: [1.0, 0.6, 0.3], A: [0.5, 0.8, 1.0] };
+
+  // Couplings drawn from the notes' propositions; aesthetics stays uncoupled
+  const rules = [
+    { test: (l, d, e) => l === 2 && e === 2, factor: 0,
+      note: "Ethics bounds action: love is not enacted where ethics forbids." },
+    { test: (l, d, e) => l === 1 && e === 2, factor: 1.6,
+      note: "Love's will is unbounded: it persists, unexpressed, where action is forbidden." },
+    { test: (l, d, e) => l >= 1 && d === 2 && e >= 1, factor: 1.5,
+      note: "Love can motivate the restraint of conflicting desire." },
+    { test: (l, d, e) => l === 2 && d === 1 && e === 0, factor: 1.4,
+      note: "Love and desire coexist; aligned and permitted, will passes into action." }
+  ];
+
+  // Build all 81 cells with both model values
+  const cells = [];
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++) for (let e = 0; e < 3; e++) for (let a = 0; a < 3; a++) {
+    const sep = weights.L[l] * weights.D[d] * weights.E[e] * weights.A[a];
+    const applied = rules.filter(r => r.test(l, d, e));
+    const blocked = applied.find(r => r.factor === 0);
+    const factor = blocked ? 0 : applied.reduce((f, r) => f * r.factor, 1);
+    cells.push({ id: `${l}${d}${e}${a}`, l, d, e, a, sep, cpl: sep * factor,
+      notes: blocked ? [blocked.note] : applied.map(r => r.note) });
+  }
+  const maxSep = d3.max(cells, c => c.sep), maxCpl = d3.max(cells, c => c.cpl);
+  cells.forEach(c => { c.sepN = c.sep / maxSep; c.cplN = c.cpl / maxCpl; });
+
+  const color = d3.scaleLinear().domain([0, 0.5, 1]).range(["#3E4E66", "#C98B8B", "#D8CC93"]).interpolate(d3.interpolateLab);
+  // Color lookup table, so pixel loops avoid string parsing
+  const lut = d3.range(256).map(i => { const c = d3.rgb(color(i / 255)); return [c.r, c.g, c.b]; });
+  const lutAt = v => lut[Math.max(0, Math.min(255, Math.round(v * 255)))];
+
+  const ui = { view: "cube", model: "separable", aIndex: 1, yaw: -0.65, pitch: 0.42, hovered: null, spinning: !still, visible: false };
+  const valueOf = c => ui.model === "separable" ? c.sepN : c.cplN;
+  const isMarked = c => ui.model === "coupled" && c.notes.length > 0;
+  const isHovered = c => ui.hovered && ui.hovered.id === c.id;
+  const markStroke = c => isHovered(c) ? "#FFFFFF" : (isMarked(c) ? "var(--illuminating)" : "none");
+
+  const svgNode = document.getElementById("tensorSvg");
+  const svg = d3.select(svgNode);
+  const cubeRoot = svg.append("g");
+  const sliceRoot = svg.append("g");
+  const volG = cubeRoot.append("g"), frameG = cubeRoot.append("g"), tickG = cubeRoot.append("g"), hitG = cubeRoot.append("g");
+
+  function setHover(c) { ui.hovered = c; renderRead(); highlightHover(); }
+  function highlightHover() {
+    svg.selectAll(".mark").attr("stroke", function () { return markStroke(d3.select(this.parentNode).datum()); });
+  }
+
+  // Smooth sampling of a 3x3 grid (or 3x3x3) by linear interpolation between cell centers
+  const clamp2 = t => Math.max(0, Math.min(2, t));
+  function lerpIdx(t) { const i = Math.min(1, Math.floor(t)); return [i, t - i]; }
+  function sample3(gv, L, E, D) {
+    const [l0, fl] = lerpIdx(clamp2(L)), [e0, fe] = lerpIdx(clamp2(E)), [d0, fd] = lerpIdx(clamp2(D));
+    let v = 0;
+    for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) for (let c = 0; c < 2; c++) {
+      v += gv[l0 + a][e0 + b][d0 + c] * (a ? fl : 1 - fl) * (b ? fe : 1 - fe) * (c ? fd : 1 - fd);
+    }
+    return v;
+  }
+  function sample2(g, R, C) {
+    const [r0, fr] = lerpIdx(clamp2(R)), [c0, fc] = lerpIdx(clamp2(C));
+    return g[r0][c0] * (1 - fr) * (1 - fc) + g[r0 + 1][c0] * fr * (1 - fc) + g[r0][c0 + 1] * (1 - fr) * fc + g[r0 + 1][c0 + 1] * fr * fc;
+  }
+
+  // ----- 3D helpers -----
+  function rot([x, y, z]) {
+    const cy = Math.cos(ui.yaw), sy = Math.sin(ui.yaw), cp = Math.cos(ui.pitch), sp = Math.sin(ui.pitch);
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+    return [x1, y * cp - z1 * sp, y * sp + z1 * cp];
+  }
+  const S = 125;
+  function project(p) { const [x, y, z] = rot(p); return [450 + x * S, 275 - y * S, z]; }
+  function lin(vec) { const [x, y] = rot(vec); return [x * S, -y * S]; }
+
+  // ----- Volume: a continuous field rendered as stacked translucent slices -----
+  // Axes: 0 = x (love), 1 = y (ethics), 2 = z (desire)
+  const N = 20, R3 = 48;
+  const planeAxes = { 0: [2, 1], 1: [0, 2], 2: [0, 1] };
+  let volCache = null;
+  function buildVolume() {
+    const key = `${ui.model}-${ui.aIndex}`;
+    if (volCache && volCache.key === key) return volCache;
+    const gv = [0, 1, 2].map(() => [0, 1, 2].map(() => [0, 0, 0]));
+    cells.filter(c => c.a === ui.aIndex).forEach(c => { gv[c.l][c.e][c.d] = valueOf(c); });
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = R3;
+    const ctx = canvas.getContext("2d");
+    const slices = [0, 1, 2].map(ax => d3.range(N).map(k => {
+      const s = -1.5 + (k + 0.5) * 3 / N;
+      const [ua, va] = planeAxes[ax];
+      const img = ctx.createImageData(R3, R3);
+      const p = [0, 0, 0];
+      p[ax] = s;
+      for (let j = 0; j < R3; j++) for (let i = 0; i < R3; i++) {
+        p[ua] = -1.5 + 3 * (i + 0.5) / R3;
+        p[va] = -1.5 + 3 * (j + 0.5) / R3;
+        const v = sample3(gv, p[0] + 1, p[1] + 1, p[2] + 1);
+        const [r, g, b] = lutAt(v);
+        const o = (j * R3 + i) * 4;
+        img.data[o] = r; img.data[o + 1] = g; img.data[o + 2] = b;
+        img.data[o + 3] = Math.round(255 * (0.02 + 0.16 * Math.pow(v, 1.2)));
+      }
+      ctx.putImageData(img, 0, 0);
+      const P0 = [0, 0, 0]; P0[ax] = s; P0[ua] = -1.5; P0[va] = -1.5;
+      const U = [0, 0, 0]; U[ua] = 3;
+      const V = [0, 0, 0]; V[va] = 3;
+      const center = [0, 0, 0]; center[ax] = s;
+      return { id: `${key}-${ax}-${k}`, url: canvas.toDataURL(), P0, U, V, center };
+    }));
+    volCache = { key, slices };
+    return volCache;
+  }
+
+  // ----- Cube view -----
+  const corners = [];
+  for (const x of [-1.5, 1.5]) for (const y of [-1.5, 1.5]) for (const z of [-1.5, 1.5]) corners.push([x, y, z]);
+  const edges = [];
+  corners.forEach((p, i) => corners.forEach((q, j) => {
+    if (j > i && p.filter((v, k) => v !== q[k]).length === 1) edges.push([p, q]);
+  }));
+  const origin = [-1.5, -1.5, -1.5];
+  const axes = [[origin, [1.9, -1.5, -1.5]], [origin, [-1.5, 1.9, -1.5]], [origin, [-1.5, -1.5, 1.9]]];
+  const ticks = [
+    ...states.L.map((s, i) => ({ text: s, pos: [i - 1, -1.85, -1.85], cls: "dS" })),
+    ...states.E.map((s, i) => ({ text: s, pos: [-1.85, i - 1, -1.85], cls: "dS" })),
+    ...states.D.map((s, i) => ({ text: s, pos: [-1.85, -1.85, i - 1], cls: "dS" })),
+    { text: "Love", pos: [2.25, -1.5, -1.5], cls: "dD" },
+    { text: "Ethics", pos: [-1.5, 2.15, -1.5], cls: "dD" },
+    { text: "Desire", pos: [-1.5, -1.5, 2.25], cls: "dD" }
+  ];
+  const drawSeg = function ([p, q]) {
+    const a = project(p), b = project(q);
+    d3.select(this).attr("x1", a[0]).attr("y1", a[1]).attr("x2", b[0]).attr("y2", b[1]);
+  };
+
+  function renderCube() {
+    const vol = buildVolume();
+    // Slice along the axis that faces the viewer most directly, drawn back to front
+    const facing = [0, 1, 2].map(ax => { const e = [0, 0, 0]; e[ax] = 1; return Math.abs(rot(e)[2]); });
+    const ax = facing.indexOf(Math.max(...facing));
+    const list = vol.slices[ax].map(s => Object.assign(s, { depth: rot(s.center)[2] })).sort((p, q) => p.depth - q.depth);
+    volG.selectAll("image").data(list, s => s.id).join(
+      enter => enter.append("image").attr("width", 1).attr("height", 1)
+        .attr("preserveAspectRatio", "none").attr("href", s => s.url)
+    ).attr("transform", s => {
+      const P = project(s.P0), u = lin(s.U), v = lin(s.V);
+      return `matrix(${u[0]},${u[1]},${v[0]},${v[1]},${P[0]},${P[1]})`;
+    }).order();
+
+    frameG.selectAll("line.edge").data(edges).join("line").attr("class", "edge")
+      .attr("stroke", "var(--mist)").attr("stroke-opacity", 0.22).attr("stroke-dasharray", "2 5").each(drawSeg);
+    frameG.selectAll("line.axis").data(axes).join("line").attr("class", "axis")
+      .attr("stroke", "var(--mist)").attr("stroke-opacity", 0.6).each(drawSeg);
+    tickG.selectAll("text").data(ticks).join("text")
+      .attr("class", d => d.cls).attr("text-anchor", "middle").attr("dy", "0.35em").text(d => d.text)
+      .style("font-size", d => d.cls === "dD" ? "18px" : "11px")
+      .attr("x", d => project(d.pos)[0]).attr("y", d => project(d.pos)[1]);
+
+    // Selection points at the 27 configurations of this aesthetic state
+    const pts = cells.filter(c => c.a === ui.aIndex);
+    const g = hitG.selectAll("g.tCell").data(pts, c => c.id).join(enter => {
+      const e = enter.append("g").attr("class", "tCell");
+      e.append("circle").attr("class", "dot").attr("r", 2).attr("fill", "rgba(255,255,255,.45)");
+      e.append("circle").attr("class", "mark").attr("r", 9).attr("fill", "transparent").attr("stroke-width", 1.6);
+      return e;
+    });
+    g.on("pointerenter", (ev, c) => setHover(c)).on("click", (ev, c) => setHover(c))
+      .attr("transform", c => { const [x, y] = project([c.l - 1, c.e - 1, c.d - 1]); return `translate(${x},${y})`; });
+    g.select(".mark").attr("stroke", c => markStroke(c));
+  }
+
+  // Drag to rotate
+  let drag = null;
+  svgNode.addEventListener("pointerdown", ev => {
+    if (ui.view !== "cube") return;
+    ui.spinning = false;
+    drag = { x: ev.clientX, y: ev.clientY, yaw: ui.yaw, pitch: ui.pitch };
+  });
+  window.addEventListener("pointermove", ev => {
+    if (!drag) return;
+    ui.yaw = drag.yaw + (ev.clientX - drag.x) * 0.01;
+    ui.pitch = Math.max(-1.2, Math.min(1.2, drag.pitch + (ev.clientY - drag.y) * 0.01));
+    renderCube();
+  });
+  window.addEventListener("pointerup", () => { drag = null; });
+
+  // Slow drift until the reader touches it; paused off-screen
+  new IntersectionObserver(es => { ui.visible = es[0].isIntersecting; }).observe(svgNode);
+  (function spin() {
+    if (ui.spinning && ui.visible && ui.view === "cube") { ui.yaw += 0.0025; renderCube(); }
+    requestAnimationFrame(spin);
+  })();
+
+  // ----- Slices view: rows = ethics, columns = aesthetics; each square is a smooth love x desire field -----
+  const R2 = 72;
+  let panelCache = null;
+  function panelUrl(e, a) {
+    const g = [0, 1, 2].map(() => [0, 0, 0]); // g[l][d]
+    cells.filter(c => c.e === e && c.a === a).forEach(c => { g[c.l][c.d] = valueOf(c); });
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = R2;
+    const ctx = canvas.getContext("2d"), img = ctx.createImageData(R2, R2);
+    for (let j = 0; j < R2; j++) for (let i = 0; i < R2; i++) {
+      const D = (i + 0.5) / R2 * 3 - 0.5, L = 2 - ((j + 0.5) / R2 * 3 - 0.5);
+      const [r, gg, b] = lutAt(sample2(g, L, D));
+      const o = (j * R2 + i) * 4;
+      img.data[o] = r; img.data[o + 1] = gg; img.data[o + 2] = b; img.data[o + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    return canvas.toDataURL();
+  }
+
+  function renderSlices() {
+    sliceRoot.selectAll("*").remove();
+    const cell = 50, mini = 150, gap = 44, left = 175, top = 82;
+    if (!panelCache || panelCache.key !== ui.model) {
+      panelCache = { key: ui.model, urls: [0, 1, 2].map(e => [0, 1, 2].map(a => panelUrl(e, a))) };
+    }
+    sliceRoot.append("text").attr("class", "dS").attr("x", left).attr("y", 26).text("Aesthetics");
+    sliceRoot.append("text").attr("class", "dS").attr("x", 0).attr("y", top - 14).text("Ethics");
+    states.A.forEach((s, a) => sliceRoot.append("text").attr("class", "dD").style("font-size", "18px")
+      .attr("x", left + a * (mini + gap) + mini / 2).attr("y", 56).attr("text-anchor", "middle").text(s));
+    states.E.forEach((s, e) => sliceRoot.append("text").attr("class", "dD").style("font-size", "18px")
+      .attr("x", 0).attr("y", top + e * (mini + gap) + mini / 2).attr("dy", "0.35em").text(s));
+    states.E.forEach((_, e) => states.L.forEach((s, l) => sliceRoot.append("text").attr("class", "dS").style("font-size", "10px")
+      .attr("x", left - 8).attr("y", top + e * (mini + gap) + (2 - l) * cell + cell / 2).attr("dy", "0.35em").attr("text-anchor", "end").text(s)));
+    states.A.forEach((_, a) => states.D.forEach((s, d) => {
+      const x = left + a * (mini + gap) + d * cell + cell / 2, y = top + 2 * (mini + gap) + mini + 8;
+      sliceRoot.append("text").attr("class", "dS").style("font-size", "10px").attr("text-anchor", "end")
+        .attr("transform", `translate(${x},${y}) rotate(-40)`).text(s);
+    }));
+    // Continuous fields, one per (ethics, aesthetics) pair
+    [0, 1, 2].forEach(e => [0, 1, 2].forEach(a => sliceRoot.append("image")
+      .attr("x", left + a * (mini + gap)).attr("y", top + e * (mini + gap))
+      .attr("width", mini).attr("height", mini).attr("preserveAspectRatio", "none")
+      .attr("href", panelCache.urls[e][a])));
+    // Invisible cells for selection, with outlines for hover and coupling marks
+    sliceRoot.selectAll("g.tCell").data(cells, c => c.id).join("g")
+      .attr("class", "tCell")
+      .on("pointerenter", (ev, c) => setHover(c))
+      .on("click", (ev, c) => setHover(c))
+      .append("rect").attr("class", "mark")
+      .attr("x", c => left + c.a * (mini + gap) + c.d * cell + 1)
+      .attr("y", c => top + c.e * (mini + gap) + (2 - c.l) * cell + 1)
+      .attr("width", cell - 2).attr("height", cell - 2).attr("rx", 2)
+      .attr("fill", "transparent").attr("stroke-width", 1.4).attr("stroke", c => markStroke(c));
+  }
+
+  // ----- Readout -----
+  const readEl = document.getElementById("tRead");
+  const legend = `<div class="tLegend">Weight, shown as color and density<div class="ramp"></div><div class="ends"><span>0</span><span>1</span></div></div>`;
+  function renderRead() {
+    const c = ui.hovered;
+    if (!c) {
+      readEl.innerHTML = ui.model === "separable"
+        ? `<h4>Independent</h4><p>Each configuration's weight is the product of four factor weights, so every dimension varies on its own, as chapter I proposes.</p><p>The field is continuous; the faint points mark the 27 configurations. Select one to read it.</p>${legend}`
+        : `<h4>With interactions</h4><p>The couplings the notes describe reshape the field. Yellow rings mark the configurations they change.</p><p>Aesthetics stays uncoupled.</p>${legend}`;
+      return;
+    }
+    const v = valueOf(c);
+    const other = ui.model === "separable" ? c.cplN : c.sepN;
+    const notesHtml = c.notes.length
+      ? (ui.model === "coupled"
+          ? c.notes.map(n => `<p class="note">${n}</p>`).join("")
+          : `<p>With interactions this weight becomes ${other.toFixed(2)}.</p>`)
+      : `<p>No coupling in the notes touches this configuration.</p>`;
+    readEl.innerHTML = `<h4>Configuration</h4>
+      <dl>${["L", "D", "E", "A"].map(k => `<dt>${factorNames[k]}</dt><dd>${states[k][c[k.toLowerCase()]]}</dd>`).join("")}</dl>
+      <p>Weight ${v.toFixed(2)}</p><div class="tBar"><span style="width:${v * 100}%"></span></div>
+      ${notesHtml}${legend}`;
+  }
+
+  // ----- Controls -----
+  const sliderWrap = document.getElementById("aSliderWrap");
+  const slider = document.getElementById("aSlider"), aOut = document.getElementById("aOut");
+  function render() {
+    const isCube = ui.view === "cube";
+    cubeRoot.style("display", isCube ? null : "none");
+    sliceRoot.style("display", isCube ? "none" : null);
+    svgNode.classList.toggle("isCube", isCube);
+    svg.attr("viewBox", isCube ? "0 0 900 560" : "0 0 820 740");
+    sliderWrap.hidden = !isCube;
+    if (isCube) renderCube(); else renderSlices();
+    renderRead();
+  }
+  document.querySelectorAll(".tensorBlock [data-view]").forEach(b => b.addEventListener("click", () => {
+    ui.view = b.dataset.view;
+    document.querySelectorAll(".tensorBlock [data-view]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    render();
+  }));
+  document.querySelectorAll(".tensorBlock [data-model]").forEach(b => b.addEventListener("click", () => {
+    ui.model = b.dataset.model;
+    document.querySelectorAll(".tensorBlock [data-model]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    render();
+  }));
+  slider.addEventListener("input", () => {
+    ui.aIndex = +slider.value;
+    aOut.textContent = states.A[ui.aIndex];
+    if (ui.hovered && ui.hovered.a !== ui.aIndex) ui.hovered = null;
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
