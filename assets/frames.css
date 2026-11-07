@@ -768,6 +768,15 @@ section {
   .research-item:nth-child(2) { margin-top: 4.5rem; }
 }
 
+/* Paired cards (sister projects): the second slides over the first's edge. */
+.research-grid .research-item[data-pair="end"] { z-index: 1; }
+@media (min-width: 961px) {
+  .research-grid .research-item[data-pair="end"] { margin: 3rem 4.5rem 0 -4.5rem; }
+}
+@media (max-width: 960px) {
+  .research-grid .research-item[data-pair="end"] { margin-top: -2.4rem; }
+}
+
 .research-item {
   --print: var(--hot);
   --tilt: -0.8deg;
